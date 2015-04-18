@@ -16,7 +16,24 @@ CHIP Mux4Way16 {
     OUT out[16];
 
     PARTS:
+    /*
+    // 147 NANDs
     Mux16(a=a, b=b, sel=sel[0], out=muxab);
     Mux16(a=c, b=d, sel=sel[0], out=muxcd);
     Mux16(a=muxab, b=muxcd, sel=sel[1], out=out);
+    */
+
+    /*
+    // Eliminate redundant Not(sel[0]) operation
+    // 146 NANDs
+    Not(in=sel[0], out=notsel0);
+    Mux16Help(a=a, b=b, sel=sel[0], notsel=notsel0, out=muxab);
+    Mux16Help(a=c, b=d, sel=sel[0], notsel=notsel0, out=muxcd);
+    Mux16(a=muxab, b=muxcd, sel=sel[1], out=out);
+    */
+
+    // Same as above, but use Mux4Way16Help chip
+    Not(in=sel[0], out=notsel0);
+    Not(in=sel[1], out=notsel1);
+    Mux4Way16Help(a=a, b=b, c=c, d=d, sel=sel, notsel0=notsel0, notsel1=notsel1, out=out);
 }

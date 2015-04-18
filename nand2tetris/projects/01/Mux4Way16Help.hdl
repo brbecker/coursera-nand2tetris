@@ -1,0 +1,21 @@
+// File name: projects/01/Mux4Way16Help.hdl
+
+/**
+ * 4-way 16-bit multiplexor:
+ * out = a if sel == 00
+ *       b if sel == 01
+ *       c if sel == 10
+ *       d if sel == 11
+ *
+ * NOTE: sel MUST equal Not(notsel) bitwise.
+ */
+
+CHIP Mux4Way16Help {
+    IN a[16], b[16], c[16], d[16], sel[2], notsel0, notsel1;
+    OUT out[16];
+
+    PARTS:
+    Mux16Help(a=a, b=b, sel=sel[0], notsel=notsel0, out=muxab);
+    Mux16Help(a=c, b=d, sel=sel[0], notsel=notsel0, out=muxcd);
+    Mux16Help(a=muxab, b=muxcd, sel=sel[1], notsel=notsel1, out=out);   
+}

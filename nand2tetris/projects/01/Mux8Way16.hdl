@@ -18,7 +18,16 @@ CHIP Mux8Way16 {
     OUT out[16];
 
     PARTS:
+    /*
+    // 341 NANDs
     Mux4Way16(a=a, b=b, c=c, d=d, sel=sel[0..1], out=abcd);
     Mux4Way16(a=e, b=f, c=g, d=h, sel=sel[0..1], out=efgh);
     Mux16(a=abcd, b=efgh, sel=sel[2], out=out);
+    */
+
+    Not(in=sel[0], out=notsel0);
+    Not(in=sel[1], out=notsel1);
+    Mux4Way16Help(a=a, b=b, c=c, d=d, sel=sel[0..1], notsel0=notsel0, notsel1=notsel1, out=abcd);
+    Mux4Way16Help(a=e, b=f, c=g, d=h, sel=sel[0..1], notsel0=notsel0, notsel1=notsel1, out=efgh);
+    Mux16(a=abcd, b=efgh, sel=sel[2], out=out);    
 }

@@ -14,9 +14,25 @@ CHIP Mux {
     OUT out;
 
     PARTS:
+    /*
     // (b and sel) or (a and not sel)
+    // 8 NANDs
     Not(in=sel, out=notsel);
     And(a=a, b=notsel, out=sela);
     And(a=b, b=sel, out=selb);
     Or(a=sela, b=selb, out=out);
+    */
+
+	/*
+    // Implement above with NANDs/NOTs directly (4 NANDs)
+    // Remove redundant NOT operations at end of And and start of Or
+    Not(in=sel, out=notsel);
+    Nand(a=a, b=notsel, out=aNANDnotsel);
+    Nand(a=b, b=sel, out=bNANDsel);
+    Nand(a=aNANDnotsel, b=bNANDsel, out=out);
+    */
+
+    // Same as above, but with helper chip which also takes notsel as input.
+    Not(in=sel, out=notsel);
+    MuxHelp(a=a, b=b, sel=sel, notsel=notsel, out=out);
 }
