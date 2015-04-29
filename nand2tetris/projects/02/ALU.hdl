@@ -42,5 +42,26 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    // Pre-process input
+    Mux16(a=x, b=false, sel=zx, out=Xor0);
+    Mux16(a=y, b=false, sel=zy, out=Yor0);
+    Not16(in=Xor0, out=notXor0);
+    Not16(in=Yor0, out=notYor0);
+    Mux16(a=Xor0, b=notXor0, sel=nx, out=preX);
+    Mux16(a=Yor0, b=notYor0, sel=ny, out=preY);
+
+    // Function
+    Add16(a=preX, b=preY, out=add);
+    And16(a=preX, b=preY, out=and);
+    Mux16(a=and, b=add, sel=f, out=func);
+
+    // Post-process output
+    Not16(in=func, out=notfunc);
+    Mux16(a=func, b=notfunc, sel=no, out=out, out[0..7]=outlsb, out[8..15]=outmsb, out[15]=ng);
+
+    // ZR Flag (ng above)
+    Or8Way(in=outlsb, out=lsb);
+    Or8Way(in=outmsb, out=msb);
+    Or(a=lsb, b=msb, out=notZR);
+    Not(in=notZR, out=zr);
 }
