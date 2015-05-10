@@ -8,4 +8,35 @@
 // i.e. writes "black" in every pixel. When no key is pressed, the
 // program clears the screen, i.e. writes "white" in every pixel.
 
-// Put your code here.
+(START)
+// Initialize ptr to the start of the SCREEN
+	@SCREEN
+	D=A
+	@ptr
+	M=D
+
+(LOOP)
+// Load D with -1 if KBD non-zero or 0 if KBD zero
+	@KBD
+	D=M
+	@ZERO
+	D;JEQ
+	D=-1
+(ZERO)
+
+// Write value of D to current screen location
+	@ptr
+	A=M
+	M=D
+
+// Increment pointer (and store in D)
+	@ptr
+	MD=M+1
+
+// Compare D to KBD (which is end of SCREEN). If zero, go to START, else LOOP
+	@KBD
+	D=D-A
+	@START
+	D;JEQ
+	@LOOP
+	0;JMP
