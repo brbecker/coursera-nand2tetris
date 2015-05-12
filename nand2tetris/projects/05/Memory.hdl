@@ -27,5 +27,15 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // Set correct load flag
+    DMux(in=load, sel=address[14], a=loadRAM, b=loadSCREEN);
+
+    // Components
+    RAM16K(in=in, load=loadRAM,    address=address[0..13], out=outRAM);
+    Screen(in=in, load=loadSCREEN, address=address[0..12], out=outSCREEN);
+    Keyboard(out=outKEYBOARD);
+
+    // Choose correct output (00 and 01 from RAM, 10 from Screen, and 11 from Keyboard)
+    Mux16(a=outSCREEN, b=outKEYBOARD, sel=address[13], out=outIO);
+    Mux16(a=outRAM, b=outIO, sel=address[14], out=out);
 }

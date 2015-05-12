@@ -39,5 +39,39 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+    // Main Components
+    ARegister(in=inA,     load=loadA, out[0..14]=addressM, out=outA);
+    DRegister(in=outMint, load=loadD, out=outD);
+    ALU(x=outD, y=AorM,
+        zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6],
+        out=outM, out=outMint, zr=zr, ng=ng);
+    PC(in=outA, load=loadPC, inc=true, reset=reset, out[0..14]=pc);
+
+    // A or C instruction?
+    Mux16(a=instruction, b=outMint, sel=instruction[15], out=inA);
+
+    // Load A?
+    Not(in=instruction[15], out=isA);
+    And(a=instruction[15], b=instruction[5], out=destA);
+    Or(a=isA, b=destA, out=loadA);
+
+    // Load D?
+    And(a=instruction[15], b=instruction[4], out=loadD);
+
+    // Load M?
+    And(a=instruction[15], b=instruction[3], out=writeM);
+
+    // A or M to ALU?
+    Mux16(a=outA, b=inM, sel=instruction[12], out=AorM);
+
+    // Jump or not?
+    And(a=instruction[2], b=ng, out=jneg);
+    And(a=instruction[1], b=zr, out=jzero);
+    Not(in=zr, out=notzr);
+    Not(in=ng, out=notng);
+    And(a=notzr, b=notng, out=pos);
+    And(a=instruction[0], b=pos, out=jpos);
+    Or(a=jneg, b=jzero, out=jnonpos);
+    Or(a=jpos, b=jnonpos, out=jump);
+    And(a=instruction[15], b=jump, out=loadPC);     // Only jump if C instruction
 }
