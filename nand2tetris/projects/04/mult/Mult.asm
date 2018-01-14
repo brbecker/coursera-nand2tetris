@@ -31,7 +31,7 @@
 	@ctr
 	MD=M-1
 
-// Set adderss to jump to top of loop
+// Set address to jump to top of loop
 	@LOOP
 // Either jump to top of loop or stay here infinitely
 (END)
