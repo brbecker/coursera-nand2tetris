@@ -61,13 +61,17 @@ class Parser:
             print('ctype: {0}; arg1: {1}; arg2: {2}'.format(Parser._ctype, Parser._arg1, Parser._arg2))
 
     def commandType(self):
-        pass
+        return self._ctype
 
     def arg1(self):
-        pass
+        if self.commandType() != Parser.C_RETURN:
+            raise Exception, "arg1: Illegal command: return"
+        return self._arg1
 
     def arg2(self):
-        pass
+        if self.commandType() not in [C_PUSH, C_POP, C_FUNCTION, C_CALL]:
+            raise Exception, "arg2: Illegal command: must be push, pop, function, or call"
+        return self._arg2
 
     def command(self):
         return self._command
