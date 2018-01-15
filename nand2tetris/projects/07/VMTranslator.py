@@ -42,7 +42,7 @@ for vmfile in vmfiles:
             cw.writeArithmetic(parser.arg1())
         elif ctype == Parser.C_PUSH or ctype == Parser.C_POP:
             cw.writePushPop(ctype, parser.arg1(), parser.arg2())
-        elif ctype in [Parser.C_LABEL, Parser.C_GOTO, Parser.C_IF, Parser.C_FUNCTION, Parser.C_RETURN, Parser.C_CALL]:
+        elif ctype in range(len(Parser.CMDS)):
             print("WARNING: Unimplemented ctype: " + ctype)
         else:
             print("ERROR: Unrecognized ctype: " + ctype)
