@@ -16,15 +16,19 @@ class Parser:
         self._DEBUG = debug
         self._cmdqueue = deque()
         with open(filename) as f:
+            lineno = 0
             for line in f:
-                # Strip comments and external whitespace
-                line = Parser.COMMENT_PATTERN.sub('', line).strip()
+                lineno += 1
 
-                # Add to the queue if there is anything left on the line
-                if line:
-                    self._cmdqueue.append(line.lower())
+                # Strip comments and external whitespace, to leave only the command
+                cmd = Parser.COMMENT_PATTERN.sub('', line).strip()
+
+                # Add to the queue if there is anything left as a command
+                if cmd:
+                    tup = (cmd.lower(), line, lineno)
+                    self._cmdqueue.append(tup)
                     if self._DEBUG:
-                        print('Added: ' + line)
+                        print('Queued: ' + str(tup))
 
     def hasMoreCommands(self):
         if self._DEBUG:
@@ -32,9 +36,9 @@ class Parser:
         return len(self._cmdqueue) != 0
 
     def advance(self):
-        stmt = self._cmdqueue.popleft()
+        (stmt, self._line, self._lineno) = self._cmdqueue.popleft()
         if self._DEBUG:
-            print('Popped: ' + stmt)
+            print('Popped "{0}" from line {2}: {1}'.format(stmt, self._line.strip(), self._lineno))
 
         # Match the command against the pattern
         match = Parser.COMMAND_PATTERN.match(stmt)
@@ -63,6 +67,12 @@ class Parser:
 
     def arg2(self):
         pass
+
+    def origline(self):
+        return self._line
+
+    def lineno(self):
+        return self._lineno
 
 if __name__ == '__main__':
     # self-test code
