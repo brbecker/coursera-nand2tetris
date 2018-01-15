@@ -29,6 +29,7 @@ class Parser:
                     self._cmdqueue.append(tup)
                     if self._DEBUG:
                         print('Queued: ' + str(tup))
+        self._command = self._line = self._lineno = None
 
     def hasMoreCommands(self):
         if self._DEBUG:
@@ -36,12 +37,12 @@ class Parser:
         return len(self._cmdqueue) != 0
 
     def advance(self):
-        (stmt, self._line, self._lineno) = self._cmdqueue.popleft()
+        (self._command, self._line, self._lineno) = self._cmdqueue.popleft()
         if self._DEBUG:
-            print('Popped "{0}" from line {2}: {1}'.format(stmt, self._line.strip(), self._lineno))
+            print('Popped "{0}" from line {2}: {1}'.format(self._command, self._line.strip(), self._lineno))
 
         # Match the command against the pattern
-        match = Parser.COMMAND_PATTERN.match(stmt)
+        match = Parser.COMMAND_PATTERN.match(self._command)
 
         # Get the command and convert it to the command type value
         cmd = match.group(1)
@@ -67,6 +68,9 @@ class Parser:
 
     def arg2(self):
         pass
+
+    def command(self):
+        return self._command
 
     def origline(self):
         return self._line
