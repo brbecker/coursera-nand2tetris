@@ -11,3 +11,6 @@ class CodeWriter:
 
     def writePushPop(self, command, segment, index):
         pass
+
+    def close(self):
+        pass
