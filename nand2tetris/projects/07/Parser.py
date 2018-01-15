@@ -19,13 +19,14 @@ class Parser:
                 # Add to the queue if there is anything left on the line
                 if line:
                     self._cmdqueue.append(line)
-                    # print('Added: ' + line)
+                    print('Added: ' + line)
 
     def hasMoreCommands(self):
-        pass
+        print('hmc (queue): ' + str(self._cmdqueue))
+        return len(self._cmdqueue) != 0
 
     def advance(self):
-        pass
+        print('Popped: ' + self._cmdqueue.popleft())
 
     def commandType(self):
         pass
