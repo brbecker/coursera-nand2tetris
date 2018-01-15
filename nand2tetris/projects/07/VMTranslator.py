@@ -1,4 +1,4 @@
-import sys,os,re
+import sys,os
 from Parser import Parser
 from CodeWriter import CodeWriter
 
@@ -21,5 +21,32 @@ else:
                 vmfiles.append(os.path.join(arg, entry.name))
     asmfilename = arg + '.asm'
 
-print('vmfiles:\t' + str(vmfiles))
-print('asmfilename:\t' + asmfilename)
+# print('vmfiles:\t' + str(vmfiles))
+# print('asmfilename:\t' + asmfilename)
+
+# Main Loop
+cw = CodeWriter(asmfilename)
+for vmfile in vmfiles:
+    parser = Parser(vmfile)
+    cw.setFileName(vmfile)
+    # print('Parsing ' + vmfile + ' to ' + asmfilename)
+
+    while parser.hasMoreCommands():
+        # Read the next command
+        parser.advance()
+
+        # Get the command type
+        ctype = parser.commandType()
+
+        if ctype == Parser.C_ARITHMETIC:
+            cw.writeArithmetic(parser.arg1())
+        elif ctype == Parser.C_PUSH or ctype == Parser.C_POP:
+            cw.writePushPop(ctype, parser.arg1(), parser.arg2())
+        elif ctype in [Parser.C_LABEL, Parser.C_GOTO, Parser.C_IF, Parser.C_FUNCTION, Parser.C_RETURN, Parser.C_CALL]:
+            print("WARNING: Unimplemented ctype: " + ctype)
+        else:
+            print("ERROR: Unrecognized ctype: " + ctype)
+            sys.exit(1)
+
+# Close the CodeWriter
+cw.close()
