@@ -64,13 +64,13 @@ class Parser:
         return self._ctype
 
     def arg1(self):
-        if self.commandType() != Parser.C_RETURN:
-            raise Exception, "arg1: Illegal command: return"
+        if self.commandType() == Parser.C_RETURN:
+            raise ValueError("arg1: Illegal command: return")
         return self._arg1
 
     def arg2(self):
-        if self.commandType() not in [C_PUSH, C_POP, C_FUNCTION, C_CALL]:
-            raise Exception, "arg2: Illegal command: must be push, pop, function, or call"
+        if self.commandType() not in [Parser.C_PUSH, Parser.C_POP, Parser.C_FUNCTION, Parser.C_CALL]:
+            raise ValueError("arg2: Illegal command: must be push, pop, function, or call")
         return self._arg2
 
     def command(self):
