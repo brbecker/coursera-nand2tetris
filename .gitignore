@@ -1,1 +1,3 @@
 nand2tetris/tools/bin/*.dat
+**/__pycache__/
+nand2tetris/projects/07/**/*.asm
