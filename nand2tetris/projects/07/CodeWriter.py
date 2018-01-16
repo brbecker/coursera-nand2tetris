@@ -1,3 +1,5 @@
+from Parser import Parser
+
 class CodeWriter:
 
     def __init__(self, filename, debug=False):
@@ -15,9 +17,28 @@ class CodeWriter:
         if cmdtext and lineno:
             self.writeComment(self._vmfile, cmdtext, lineno)
 
+        # push constant 7
+        if segment == 'constant':
+            if command == Parser.C_PUSH:
+                self.writeCode('    @{0}'.format(index))
+                self.writeCode('    D=A')
+                self.writeCode('    @SP')
+                self.writeCode('    A=M')
+                self.writeCode('    M=D')
+                self.writeCode('    @SP')
+                self.writeCode('    M=M+1')
+                self.writeCode('')
+            else:
+                print("ERROR: pop not supported for constant segment: " + cmdtext)
+        else:
+            print("WARNING: Unimplemented segment: " + segment)
+
     def writeComment(self, vmfilename, cmdtext, lineno):
-        print('// {0} [{2}]: {1}'.format(vmfilename, cmdtext, lineno),
-              file=self._outfile)
+        self.writeCode('// {0} [{2}]: {1}'.format(vmfilename, cmdtext, lineno))
+
+    # Simplify code generation by putting file specification in one place
+    def writeCode(self, code):
+        print(code, file=self._outfile)
 
     def close(self):
         self._outfile.close()
