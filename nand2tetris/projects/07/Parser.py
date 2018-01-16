@@ -48,17 +48,17 @@ class Parser:
         cmd = match.group(1)
         if cmd in Parser.ARITH_CMDS:
             # All arithmetic commands map to C_ARITHMETIC and arg1 is set to the actual cmd
-            Parser._ctype = Parser.C_ARITHMETIC
-            Parser._arg1  = cmd
-            Parser._arg2  = None
+            self._ctype = Parser.C_ARITHMETIC
+            self._arg1  = cmd
+            self._arg2  = None
         else:
             # All other commands are indexed in CMDS
-            Parser._ctype = Parser.CMDS.index(cmd)
-            Parser._arg1  = match.group(3) or None
-            Parser._arg2  = match.group(4) or None
+            self._ctype = Parser.CMDS.index(cmd)
+            self._arg1  = match.group(3) or None
+            self._arg2  = match.group(4) or None
 
         if self._DEBUG:
-            print('ctype: {0}; arg1: {1}; arg2: {2}'.format(Parser._ctype, Parser._arg1, Parser._arg2))
+            print('ctype: {0}; arg1: {1}; arg2: {2}'.format(self._ctype, self._arg1, self._arg2))
 
     def commandType(self):
         return self._ctype
