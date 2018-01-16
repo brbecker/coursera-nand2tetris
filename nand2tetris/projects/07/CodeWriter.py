@@ -1,10 +1,10 @@
 class CodeWriter:
 
     def __init__(self, filename):
-        pass
+        self._outfile = open(filename, 'w')
 
     def setFileName(self, filename):
-        pass
+        self._vmfile = filename
 
     def writeArithmetic(self, command):
         pass
@@ -13,4 +13,4 @@ class CodeWriter:
         pass
 
     def close(self):
-        pass
+        close(self._outfile)
