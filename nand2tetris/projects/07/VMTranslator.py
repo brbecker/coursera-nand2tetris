@@ -2,6 +2,8 @@ import sys,os
 from Parser import Parser
 from CodeWriter import CodeWriter
 
+DEBUG = True
+
 # Get VM file or directory of files from the command line
 try:
     arg  = sys.argv[1]
@@ -25,9 +27,9 @@ else:
 # print('asmfilename:\t' + asmfilename)
 
 # Main Loop
-cw = CodeWriter(asmfilename)
+cw = CodeWriter(asmfilename, DEBUG)
 for vmfile in vmfiles:
-    parser = Parser(vmfile)
+    parser = Parser(vmfile, DEBUG)
     cw.setFileName(vmfile)
     # print('Parsing ' + vmfile + ' to ' + asmfilename)
 
@@ -38,10 +40,13 @@ for vmfile in vmfiles:
         # Get the command type
         ctype = parser.commandType()
 
+        # Generate the code for the command
         if ctype == Parser.C_ARITHMETIC:
-            cw.writeArithmetic(parser.arg1())
+            cw.writeArithmetic(parser.arg1(),
+                               parser.command(), parser.lineno())
         elif ctype == Parser.C_PUSH or ctype == Parser.C_POP:
-            cw.writePushPop(ctype, parser.arg1(), parser.arg2())
+            cw.writePushPop(ctype, parser.arg1(), parser.arg2(),
+                            parser.command(), parser.lineno())
         elif ctype in range(len(Parser.CMDS)):
             print("WARNING: Unimplemented ctype: " + ctype)
         else:
