@@ -20,4 +20,4 @@ class CodeWriter:
               file=self._outfile)
 
     def close(self):
-        close(self._outfile)
+        self._outfile.close()
