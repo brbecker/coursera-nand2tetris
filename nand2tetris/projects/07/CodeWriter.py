@@ -13,6 +13,35 @@ class CodeWriter:
         if cmdtext and lineno:
             self.writeComment(self._vmfile, cmdtext, lineno)
 
+        if command in [ 'neg', 'not' ]:
+            # For the unary operations neg and not, we would pop the value,
+            # perform the operation, and then push the result back on the
+            # stack. For efficiency, just manipulate the value on the stack
+            # directly. Saves the data copies and useless changes of SP.
+            self.writeCode('@SP')
+            self.writeCode('A=M-1')
+            if command == 'neg':
+                self.writeCode('M=-M')
+            else:
+                self.writeCode('M=!M')
+        else:
+            # For the binary operations, pop the second argument into D, then
+            # perform the operation directly on the top of the stack.
+            self.writeCode('@SP')
+            self.writeCode('AM=M-1')
+            self.writeCode('D=M')
+            self.writeCode('A=A-1')
+
+            if command == 'add':
+                self.writeCode('M=D+M')
+            elif command == 'sub':
+                self.writeCode('M=M-D')
+            else:
+                print("WARNING: Unimplemented command: " + command)
+
+        # Create a blank line in the ASM output after each VM command
+        self.writeCode('', indent=False)
+
     def writePushPop(self, command, segment, index, cmdtext=None, lineno=None):
         if cmdtext and lineno:
             self.writeComment(self._vmfile, cmdtext, lineno)
