@@ -1,3 +1,4 @@
+import os
 from Parser import Parser
 
 class CodeWriter:
@@ -8,6 +9,7 @@ class CodeWriter:
 
     def setFileName(self, filename):
         self._vmfile = filename
+        self._vmfilebase = os.path.basename(filename)
 
     def writeArithmetic(self, command, cmdtext=None, lineno=None):
         if cmdtext and lineno:
@@ -36,6 +38,20 @@ class CodeWriter:
                 self.writeCode('M=D+M')
             elif command == 'sub':
                 self.writeCode('M=M-D')
+            elif command == 'eq':
+                self.writeCode('D=M-D')
+                self.writeCode('@{0}-{1}-{2}'.format(self._vmfilebase, lineno, 'eq'))
+                self.writeCode('D;JEQ')
+                self.writeCode('@{0}-{1}-{2}'.format(self._vmfilebase, lineno, 'out'))
+                self.writeCode('D=0;JMP')
+                self.writeCode('({0}-{1}-{2})'.format(self._vmfilebase, lineno, 'eq'),
+                               indent=False)
+                self.writeCode('D=-1')
+                self.writeCode('({0}-{1}-{2})'.format(self._vmfilebase, lineno, 'out'),
+                               indent=False)
+                self.writeCode('@SP')
+                self.writeCode('A=M-1')
+                self.writeCode('M=D')
             else:
                 print("WARNING: Unimplemented command: " + command)
 
