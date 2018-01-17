@@ -52,8 +52,12 @@ class CodeWriter:
                 self.writeCode('@SP')
                 self.writeCode('A=M-1')
                 self.writeCode('M=D')
+            elif command == 'and':
+                self.writeCode('M=D&M')
+            elif command == 'or':
+                self.writeCode('M=M|D')
             else:
-                print("WARNING: Unimplemented command: " + command)
+                print("WARNING: Unimplemented arithmetic command: " + command)
 
         # Create a blank line in the ASM output after each VM command
         self.writeCode('', indent=False)
@@ -87,7 +91,7 @@ class CodeWriter:
     # Simplify code generation by putting file specification in one place
     def writeCode(self, code, indent=True):
         if indent:
-            code = '    ' + code
+            code = ' ' * 4 + code
         print(code, file=self._outfile)
 
     def close(self):
