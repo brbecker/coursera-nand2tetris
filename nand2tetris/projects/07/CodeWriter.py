@@ -38,13 +38,13 @@ class CodeWriter:
                 self.writeCode('M=D+M')
             elif command == 'sub':
                 self.writeCode('M=M-D')
-            elif command == 'eq':
+            elif command in [ 'eq', 'gt', 'lt' ]:
                 self.writeCode('D=M-D')
-                self.writeCode('@{0}-{1}-{2}'.format(self._vmfilebase, lineno, 'eq'))
-                self.writeCode('D;JEQ')
+                self.writeCode('@{0}-{1}-{2}'.format(self._vmfilebase, lineno, command))
+                self.writeCode('D;J{0}'.format(command.upper()))
                 self.writeCode('@{0}-{1}-{2}'.format(self._vmfilebase, lineno, 'out'))
                 self.writeCode('D=0;JMP')
-                self.writeCode('({0}-{1}-{2})'.format(self._vmfilebase, lineno, 'eq'),
+                self.writeCode('({0}-{1}-{2})'.format(self._vmfilebase, lineno, command),
                                indent=False)
                 self.writeCode('D=-1')
                 self.writeCode('({0}-{1}-{2})'.format(self._vmfilebase, lineno, 'out'),
