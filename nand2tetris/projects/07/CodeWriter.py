@@ -65,20 +65,47 @@ class CodeWriter:
         if cmdtext and lineno:
             self.writeComment(self._vmfile, cmdtext, lineno)
 
-        # push constant 7
-        if segment == 'constant':
-            if command == Parser.C_PUSH:
-                self.writeCode('@{0}'.format(index))
-                self.writeCode('D=A')
-                self.writeCode('@SP')
-                self.writeCode('A=M')
-                self.writeCode('M=D')
-                self.writeCode('@SP')
-                self.writeCode('M=M+1')
+        # Push
+        if command == Parser.C_PUSH:
+            # Load the index (offset/constant) into D
+            self.writeCode('@{0}'.format(index))
+            self.writeCode('D=A')
+
+            # Compute final address and load value into D
+            if segment == 'constant':
+                # No arithmetic required for constant
+                pass
+            elif segment in [ 'local', 'argument', 'this', 'that' ]:
+                # Load the base address of the segment into A
+                if segment == 'local':
+                    self.writeCode('@LCL')
+                elif segment == 'argument':
+                    self.writeCode('@ARG')
+                else:
+                    self.writeCode('@{0}'.format(segment.upper()))
+
+                # Compute the desired location and load the value there into D
+                self.writeCode('A=D+A')
+                self.writeCode('D=M')
             else:
-                print("ERROR: pop not supported for constant segment: " + cmdtext)
+                print('WARNING: push unimplemented for segment ' + segment)
+
+            # Push D on to the stack
+            self.writeCode('@SP')
+            self.writeCode('A=M')
+            self.writeCode('M=D')
+            self.writeCode('@SP')
+            self.writeCode('M=M+1')
+
+        # Pop
+        elif command == Parser.C_POP:
+            if segment == 'constant':
+                raise ValueError('pop not supported for constant segment: ' + cmdtext)
+            else:
+                print('WARNING: pop unimplemented for segment ' + segment)
+
         else:
-            print("WARNING: Unimplemented segment: " + segment)
+            raise ValueError('writePushPop: Unrecognized command {0}'.format(command))
 
         # Create a blank line in the ASM output after each VM command
         self.writeCode('', indent=False)
