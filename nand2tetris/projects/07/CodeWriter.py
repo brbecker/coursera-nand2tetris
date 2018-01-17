@@ -65,30 +65,45 @@ class CodeWriter:
         if cmdtext and lineno:
             self.writeComment(self._vmfile, cmdtext, lineno)
 
-        # Push
-        if command == Parser.C_PUSH:
-            # Load the index (offset/constant) into D
-            self.writeCode('@{0}'.format(index))
+        # Error checking
+        if command == Parser.C_POP and segment == 'constant':
+            raise ValueError('pop not supported for constant segment: ' + cmdtext)
+
+        # Calculate the RAM address we really want
+
+        # Load the index (offset/constant) into A
+        self.writeCode('@{0}'.format(index))
+
+        # Compute final address in A
+        if segment == 'constant':
+            # No arithmetic required for constant
+            pass
+        elif segment in [ 'local', 'argument', 'this', 'that' ]:
+            # Shift the offset into D
             self.writeCode('D=A')
 
-            # Compute final address and load value into D
-            if segment == 'constant':
-                # No arithmetic required for constant
-                pass
-            elif segment in [ 'local', 'argument', 'this', 'that' ]:
-                # Load the base address of the segment into A
-                if segment == 'local':
-                    self.writeCode('@LCL')
-                elif segment == 'argument':
-                    self.writeCode('@ARG')
-                else:
-                    self.writeCode('@{0}'.format(segment.upper()))
-
-                # Compute the desired location and load the value there into D
-                self.writeCode('A=D+A')
-                self.writeCode('D=M')
+            # Load the base address of the segment into A
+            if segment == 'local':
+                self.writeCode('@LCL')
+            elif segment == 'argument':
+                self.writeCode('@ARG')
             else:
-                print('WARNING: push unimplemented for segment ' + segment)
+                self.writeCode('@{0}'.format(segment.upper()))
+
+            # Compute the desired final location
+            self.writeCode('AD=D+M')
+        elif segment in [ 'pointer', 'temp', 'static' ]:
+            print('WARNING: push/pop unimplemented for segment ' + segment)
+        else:
+            raise ValueError('Unrecognized segment ' + segment)
+
+        # push
+        if command == Parser.C_PUSH:
+            # Load the value into D (if not already there)
+            if segment == 'constant':
+                self.writeCode('D=A')
+            else:
+                self.writeCode('D=M')
 
             # Push D on to the stack
             self.writeCode('@SP')
@@ -99,10 +114,19 @@ class CodeWriter:
 
         # Pop
         elif command == Parser.C_POP:
-            if segment == 'constant':
-                raise ValueError('pop not supported for constant segment: ' + cmdtext)
-            else:
-                print('WARNING: pop unimplemented for segment ' + segment)
+            # Save the calculated address in R13
+            self.writeCode('@R13')
+            self.writeCode('M=D')
+
+            # Pop the value from the stack into D
+            self.writeCode('@SP')
+            self.writeCode('AM=M-1')
+            self.writeCode('D=M')
+
+            # Retrieve the address from R13 and save the value
+            self.writeCode('@R13')
+            self.writeCode('A=M')
+            self.writeCode('M=D')
 
         else:
             raise ValueError('writePushPop: Unrecognized command {0}'.format(command))
