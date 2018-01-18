@@ -32,7 +32,7 @@ class Parser:
         self._command = self._line = self._lineno = None
 
     def hasMoreCommands(self):
-        if self._DEBUG:
+        if False and self._DEBUG:
             print('hmc (queue): ' + str(self._cmdqueue))
         return len(self._cmdqueue) != 0
 
