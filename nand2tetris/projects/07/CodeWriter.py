@@ -68,13 +68,17 @@ class CodeWriter:
         # Error checking
         if command == Parser.C_POP and segment == 'constant':
             raise ValueError('pop not supported for constant segment: ' + cmdtext)
+        if segment == 'pointer' and int(index) not in range(0, 2):
+            raise ValueError('pointer segment only supports indexes 0 and 1: ' + cmdtext)
+        if segment == 'temp' and int(index) not in range(0, 8):
+            raise ValueError('temp segment only supports indexes from 0 to 7: ' + cmdtext)
 
         # Calculate the RAM address we really want
 
         # Load the index (offset/constant) into A
         self.writeCode('@{0}'.format(index))
 
-        # Compute final address in A
+        # Load the address in A
         if segment == 'constant':
             # No arithmetic required for constant
             pass
@@ -92,8 +96,24 @@ class CodeWriter:
 
             # Compute the desired final location
             self.writeCode('AD=D+M')
-        elif segment in [ 'pointer', 'temp', 'static' ]:
-            print('WARNING: push/pop unimplemented for segment ' + segment)
+        elif segment in [ 'pointer', 'temp' ]:
+            # Shift the offset into D
+            self.writeCode('D=A')
+
+            # Load the base address of the segment into A
+            if segment == 'pointer':
+                self.writeCode('@THIS')
+            elif segment == 'temp':
+                self.writeCode('@5')
+
+            # Compute the desired final location (NOT indirect)
+            self.writeCode('AD=D+A')
+        elif segment == 'static':
+            # For the static segment, just create a label and let the assembler deal with it
+            self.writeCode('@{0}.{1}'.format(self._vmfile, index))
+            if command == Parser.C_POP:
+                # Copy the address to D if popping
+                self.writeCode('D=A')
         else:
             raise ValueError('Unrecognized segment ' + segment)
 
