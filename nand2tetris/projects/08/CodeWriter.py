@@ -67,7 +67,7 @@ class CodeWriter:
         # Create a blank line in the ASM output after each VM command
         self.writeCode('', indent=False)
 
-    def writePushPop(self, command, segment, index, cmdtext=None, lineno=None):
+    def writePushPop(self, ctype, segment, index, cmdtext=None, lineno=None):
         if cmdtext and lineno:
             self.writeComment(self._vmfile, cmdtext, lineno)
 
@@ -75,7 +75,7 @@ class CodeWriter:
         segment = segment.lower()
 
         # Error checking
-        if command == Parser.C_POP and segment == 'constant':
+        if ctype == Parser.C_POP and segment == 'constant':
             raise ValueError('pop not supported for constant segment: ' + cmdtext)
         if segment == 'pointer' and int(index) not in range(0, 2):
             raise ValueError('pointer segment only supports indexes 0 and 1: ' + cmdtext)
@@ -120,14 +120,14 @@ class CodeWriter:
         elif segment == 'static':
             # For the static segment, just create a label and let the assembler deal with it
             self.writeCode('@{0}.{1}'.format(self._vmfile, index))
-            if command == Parser.C_POP:
+            if ctype == Parser.C_POP:
                 # Copy the address to D if popping
                 self.writeCode('D=A')
         else:
             raise ValueError('Unrecognized segment ' + segment)
 
         # push
-        if command == Parser.C_PUSH:
+        if ctype == Parser.C_PUSH:
             # Load the value into D (if not already there)
             if segment == 'constant':
                 self.writeCode('D=A')
@@ -142,7 +142,7 @@ class CodeWriter:
             self.writeCode('M=M+1')
 
         # Pop
-        elif command == Parser.C_POP:
+        elif ctype == Parser.C_POP:
             # Save the calculated address in R13
             self.writeCode('@R13')
             self.writeCode('M=D')
@@ -158,7 +158,7 @@ class CodeWriter:
             self.writeCode('M=D')
 
         else:
-            raise ValueError('writePushPop: Unrecognized command {0}'.format(command))
+            raise ValueError('writePushPop: Unrecognized ctype {0}'.format(ctype))
 
         # Create a blank line in the ASM output after each VM command
         self.writeCode('', indent=False)
