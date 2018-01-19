@@ -48,9 +48,9 @@ for vmfile in vmfiles:
             cw.writePushPop(ctype, parser.arg1(), parser.arg2(),
                             parser.command(), parser.lineno())
         elif ctype in range(len(Parser.CMDS)):
-            print("WARNING: Unimplemented ctype: " + ctype)
+            print("WARNING: Unimplemented ctype: " + str(ctype))
         else:
-            print("ERROR: Unrecognized ctype: " + ctype)
+            print("ERROR: Unrecognized ctype: " + str(ctype))
             sys.exit(1)
 
 # Close the CodeWriter
