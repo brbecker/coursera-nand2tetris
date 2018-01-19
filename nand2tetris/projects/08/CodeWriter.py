@@ -8,7 +8,10 @@ class CodeWriter:
         self._DEBUG = debug
 
     def setFileName(self, filename):
+        if not filename.endswith('.vm'):
+            print("WARNING: filename does not have .vm extension: " + filename)
         self._vmfile = os.path.basename(filename)
+        self._vmfilenoext = self._vmfile.replace('.vm', '')[:-3]
 
     def writeArithmetic(self, command, cmdtext=None, lineno=None):
         if cmdtext and lineno:
@@ -39,14 +42,14 @@ class CodeWriter:
                 self.writeCode('M=M-D')
             elif command in [ 'eq', 'gt', 'lt' ]:
                 self.writeCode('D=M-D')
-                self.writeCode('@{0}-{1}-{2}'.format(self._vmfile, lineno, command))
+                self.writeCode('@{0}-{1}-{2}'.format(self._vmfilenoext, lineno, command))
                 self.writeCode('D;J{0}'.format(command.upper()))
-                self.writeCode('@{0}-{1}-{2}'.format(self._vmfile, lineno, 'out'))
+                self.writeCode('@{0}-{1}-{2}'.format(self._vmfilenoext, lineno, 'out'))
                 self.writeCode('D=0;JMP')
-                self.writeCode('({0}-{1}-{2})'.format(self._vmfile, lineno, command),
+                self.writeCode('({0}-{1}-{2})'.format(self._vmfilenoext, lineno, command),
                                indent=False)
                 self.writeCode('D=-1')
-                self.writeCode('({0}-{1}-{2})'.format(self._vmfile, lineno, 'out'),
+                self.writeCode('({0}-{1}-{2})'.format(self._vmfilenoext, lineno, 'out'),
                                indent=False)
                 self.writeCode('@SP')
                 self.writeCode('A=M-1')
