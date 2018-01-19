@@ -25,7 +25,7 @@ class Parser:
 
                 # Add to the queue if there is anything left as a command
                 if cmd:
-                    tup = (cmd.lower(), line, lineno)
+                    tup = (cmd, line, lineno)
                     self._cmdqueue.append(tup)
                     if self._DEBUG:
                         print('Queued: ' + str(tup))

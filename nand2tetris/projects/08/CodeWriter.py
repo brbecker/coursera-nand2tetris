@@ -17,6 +17,9 @@ class CodeWriter:
         if cmdtext and lineno:
             self.writeComment(self._vmfile, cmdtext, lineno)
 
+        # Set command to lower case
+        command = command.lower()
+
         if command in [ 'neg', 'not' ]:
             # For the unary operations neg and not, we would pop the value,
             # perform the operation, and then push the result back on the
@@ -67,6 +70,9 @@ class CodeWriter:
     def writePushPop(self, command, segment, index, cmdtext=None, lineno=None):
         if cmdtext and lineno:
             self.writeComment(self._vmfile, cmdtext, lineno)
+
+        # Set segment to lower case
+        segment = segment.lower()
 
         # Error checking
         if command == Parser.C_POP and segment == 'constant':
