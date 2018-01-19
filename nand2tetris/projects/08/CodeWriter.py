@@ -13,6 +13,10 @@ class CodeWriter:
         self._vmfile = os.path.basename(filename)
         self._vmfilenoext = self._vmfile.replace('.vm', '')[:-3]
 
+        # Initial "function" name is '_'. Will be updated each time a "function"
+        # is encountered.
+        self._currFunction = '_'
+
     def writeArithmetic(self, command, cmdtext=None, lineno=None):
         if cmdtext and lineno:
             self.writeComment(self._vmfile, cmdtext, lineno)
@@ -159,6 +163,16 @@ class CodeWriter:
 
         else:
             raise ValueError('writePushPop: Unrecognized ctype {0}'.format(ctype))
+
+        # Create a blank line in the ASM output after each VM command
+        self.writeCode('', indent=False)
+
+    def writeLabel(self, label, cmdtext=None, lineno=None):
+        if cmdtext and lineno:
+            self.writeComment(self._vmfile, cmdtext, lineno)
+
+        # Output the ASM label
+        self.writeCode('({0}${1})'.format(self._currFunction, label), indent=False)
 
         # Create a blank line in the ASM output after each VM command
         self.writeCode('', indent=False)
