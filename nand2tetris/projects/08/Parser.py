@@ -6,7 +6,7 @@ class Parser:
     # Command types
     ARITH_CMDS = [ 'add', 'sub', 'neg', 'eq', 'gt', 'lt', 'and', 'or', 'not' ]
     CMDS = [ 'ARITH', 'push', 'pop', 'label', 'goto', 'if-goto', 'function', 'call', 'return' ]
-    (C_ARITHMETIC, C_PUSH, C_POP, C_LABEL, C_GOTO, C_IF, C_FUNCTION, C_RETURN, C_CALL) = range(len(CMDS))
+    (C_ARITHMETIC, C_PUSH, C_POP, C_LABEL, C_GOTO, C_IF, C_FUNCTION, C_CALL, C_RETURN) = range(len(CMDS))
 
     # Regular expressions (compiled for speed)
     COMMENT_PATTERN = re.compile(r'//.*$')

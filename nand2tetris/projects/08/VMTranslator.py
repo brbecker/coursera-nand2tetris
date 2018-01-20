@@ -56,6 +56,10 @@ for vmfile in vmfiles:
             cw.writeGoto(arg1)
         elif ctype == Parser.C_IF:
             cw.writeIf(arg1)
+        elif ctype == Parser.C_FUNCTION:
+            cw.writeFunction(arg1, arg2)
+        elif ctype == Parser.C_RETURN:
+            cw.writeReturn()
         elif ctype in range(len(Parser.CMDS)):
             print("WARNING: Unimplemented ctype: " + str(ctype))
         else:

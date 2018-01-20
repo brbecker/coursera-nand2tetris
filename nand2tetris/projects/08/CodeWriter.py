@@ -176,6 +176,80 @@ class CodeWriter:
         self.writeCode('@{}${}'.format(self._currFunction, label))
         self.writeCode('D;JNE')
 
+    def writeFunction(self, functionName, numLocals):
+        # Output the label for the function and update current function
+        self.writeCode('({})'.format(functionName), indent=False)
+        self._currFunction = functionName
+
+        # Set up for the local variables
+        if int(numLocals) > 0:
+            self.writeCode('@SP')
+            self.writeCode('AD=M')
+            for _ in range(int(numLocals)):
+                self.writeCode('M=0')
+                self.writeCode('AD=A+1')
+            self.writeCode('@SP')
+            self.writeCode('M=D')
+
+    def writeReturn(self):
+        # FRAME (R14) = LCL
+        self.writeCode('@LCL')
+        self.writeCode('D=M')
+        self.writeCode('@R14')
+        self.writeCode('M=D')
+
+        # RET (R15) = *(FRAME-5)
+        self.writeCode('@5')
+        self.writeCode('A=D-A')
+        self.writeCode('D=M')
+        self.writeCode('@R15')
+        self.writeCode('M=D')
+
+        # *ARG = pop()
+        self.writeCode('@SP')
+        self.writeCode('A=M-1')
+        self.writeCode('D=M')
+        self.writeCode('@ARG')
+        self.writeCode('A=M')
+        self.writeCode('M=D')
+
+        # SP = ARG+1
+        self.writeCode('D=A+1')
+        self.writeCode('@SP')
+        self.writeCode('M=D')
+
+        # THAT = *(FRAME-1)
+        self.writeCode('@R14')
+        self.writeCode('AM=M-1')
+        self.writeCode('D=M')
+        self.writeCode('@THAT')
+        self.writeCode('M=D')
+
+        # THIS = *(FRAME-2)
+        self.writeCode('@R14')
+        self.writeCode('AM=M-1')
+        self.writeCode('D=M')
+        self.writeCode('@THIS')
+        self.writeCode('M=D')
+
+        # ARG = *(FRAME-3)
+        self.writeCode('@R14')
+        self.writeCode('AM=M-1')
+        self.writeCode('D=M')
+        self.writeCode('@ARG')
+        self.writeCode('M=D')
+
+        # LCL = *(FRAME-4)
+        self.writeCode('@R14')
+        self.writeCode('AM=M-1')
+        self.writeCode('D=M')
+        self.writeCode('@LCL')
+        self.writeCode('M=D')
+
+        # goto RET
+        self.writeCode('@R15')
+        self.writeCode('A=M;JMP')
+
     def writeComment(self, cmdtext, lineno):
         self.writeCode('// {} [{}]: {}'.format(self._vmfile, lineno, cmdtext),
                        indent=False)
