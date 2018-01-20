@@ -19,7 +19,7 @@ class CodeWriter:
         # "function" is encountered.
         self._currFunction = '_null'
 
-    def writeArithmetic(self, command):
+    def writeArithmetic(self, command, lineno):
         # Set command to lower case
         command = command.lower()
 

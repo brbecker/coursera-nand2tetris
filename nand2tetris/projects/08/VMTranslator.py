@@ -47,7 +47,7 @@ for vmfile in vmfiles:
 
         # Generate the code for the command
         if ctype == Parser.C_ARITHMETIC:
-            cw.writeArithmetic(arg1)
+            cw.writeArithmetic(arg1, parser.lineno())
         elif ctype == Parser.C_PUSH or ctype == Parser.C_POP:
             cw.writePushPop(ctype, arg1, arg2)
         elif ctype == Parser.C_LABEL:
