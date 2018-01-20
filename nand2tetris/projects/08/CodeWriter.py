@@ -218,6 +218,45 @@ class CodeWriter:
         self.writeCode('@R15')
         self.writeCode('A=M;JMP')
 
+    def writeCall(self, functionName, numArgs):
+        # Push return address
+        self.writeCode('@{}:RET{}'.format(self._currFunction, self._callCounter))
+        self.writeCode('D=A')
+        self.writePushD()
+
+        # Push LCL, ARG, THIS, and THAT
+        for reg in [ 'LCL', 'ARG', 'THIS', 'THAT' ]:
+            self.writeCode('@{}'.format(reg))
+            self.writeCode('D=M')
+            self.writePushD()
+
+        # ARG = SP-numArgs-5
+        self.writeCode('@SP')
+        self.writeCode('D=M')
+        self.writeCode('@{}'.format(numArgs))
+        self.writeCode('D=D-A')
+        self.writeCode('@5')
+        self.writeCode('D=D-A')
+        self.writeCode('@ARG')
+        self.writeCode('M=D')
+
+        # LCL = SP
+        self.writeCode('@SP')
+        self.writeCode('D=M')
+        self.writeCode('@LCL')
+        self.writeCode('M=D')
+
+        # goto functionName
+        self.writeCode('@{}'.format(functionName))
+        self.writeCode('0;JMP')
+
+        # Label for return address
+        self.writeCode('({}:RET{})'.format(self._currFunction, self._callCounter),
+                       indent=False)
+
+        # Increment the call counter
+        self._callCounter += 1
+
     def writePopD(self):
         # Pop into D
         self.writeCode('@SP')
