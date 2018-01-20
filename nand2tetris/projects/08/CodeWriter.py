@@ -179,6 +179,22 @@ class CodeWriter:
         # Create a blank line in the ASM output after each VM command
         self.writeCode('', indent=False)
 
+    def writeIf(self, label, cmdtext=None, lineno=None):
+        if cmdtext and lineno:
+            self.writeComment(self._vmfile, cmdtext, lineno)
+
+        # Pop the top of the stack into D
+        self.writeCode('@SP')
+        self.writeCode('AM=M-1')
+        self.writeCode('D=M')
+
+        # Load the destination and jump if non-zero
+        self.writeCode('@{0}${1}'.format(self._currFunction, label))
+        self.writeCode('D;JNE')
+
+        # Create a blank line in the ASM output after each VM command
+        self.writeCode('', indent=False)
+
     def writeComment(self, vmfilename, cmdtext, lineno):
         self.writeCode('// {0} [{2}]: {1}'.format(vmfilename, cmdtext, lineno),
                        indent=False)
