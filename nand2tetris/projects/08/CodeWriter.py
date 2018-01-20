@@ -6,6 +6,8 @@ class CodeWriter:
     def __init__(self, filename, debug=False):
         self._outfile = open(filename, 'w')
         self._DEBUG = debug
+        if self._DEBUG:
+            self._asmInstCounter = 0
 
     def setFileName(self, filename):
         if not filename.endswith('.vm'):
@@ -185,6 +187,10 @@ class CodeWriter:
     def writeCode(self, code, indent=True):
         if indent:
             code = ' ' * 4 + code
+            if self._DEBUG:
+                code = '{:<20}// {!s}'.format(code, self._asmInstCounter)
+                self._asmInstCounter += 1
+
         print(code, file=self._outfile)
 
     def close(self):

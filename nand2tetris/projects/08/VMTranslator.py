@@ -2,7 +2,7 @@ import sys,os
 from Parser import Parser
 from CodeWriter import CodeWriter
 
-DEBUG = False
+DEBUG = True
 
 # Get VM file or directory of files from the command line
 try:
