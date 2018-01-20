@@ -204,7 +204,7 @@ class CodeWriter:
         if indent:
             code = ' ' * 4 + code
             if self._DEBUG:
-                code = '{:<20}// {!s}'.format(code, self._asmInstCounter)
+                code = '{:<28}// {!s}'.format(code, self._asmInstCounter)
                 self._asmInstCounter += 1
 
         print(code, file=self._outfile)
