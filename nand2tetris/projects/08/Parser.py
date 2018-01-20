@@ -6,7 +6,7 @@ class Parser:
     # Command types
     ARITH_CMDS = [ 'add', 'sub', 'neg', 'eq', 'gt', 'lt', 'and', 'or', 'not' ]
     CMDS = [ 'ARITH', 'push', 'pop', 'label', 'goto', 'if-goto', 'function', 'call', 'return' ]
-    (C_ARITHMETIC, C_PUSH, C_POP, C_LABEL, C_GOTO, C_IF, C_FUNCTION, C_RETURN, C_CALL) = range(len(CMDS))
+    (C_ARITHMETIC, C_PUSH, C_POP, C_LABEL, C_GOTO, C_IF, C_FUNCTION, C_CALL, C_RETURN) = range(len(CMDS))
 
     # Regular expressions (compiled for speed)
     COMMENT_PATTERN = re.compile(r'//.*$')
@@ -25,7 +25,7 @@ class Parser:
 
                 # Add to the queue if there is anything left as a command
                 if cmd:
-                    tup = (cmd.lower(), line, lineno)
+                    tup = (cmd, line, lineno)
                     self._cmdqueue.append(tup)
                     if self._DEBUG:
                         print('Queued: ' + str(tup))
@@ -39,7 +39,7 @@ class Parser:
     def advance(self):
         (self._command, self._line, self._lineno) = self._cmdqueue.popleft()
         if self._DEBUG:
-            print('Popped "{0}" from line {2}: {1}'.format(self._command, self._line.strip(), self._lineno))
+            print('Popped "{}" from line {}: {}'.format(self._command, self._lineno, self._line.strip()))
 
         # Match the command against the pattern
         match = Parser.COMMAND_PATTERN.match(self._command)
@@ -58,19 +58,15 @@ class Parser:
             self._arg2  = match.group(4) or None
 
         if self._DEBUG:
-            print('ctype: {0}; arg1: {1}; arg2: {2}'.format(self._ctype, self._arg1, self._arg2))
+            print('ctype: {}; arg1: {}; arg2: {}'.format(self._ctype, self._arg1, self._arg2))
 
     def commandType(self):
         return self._ctype
 
     def arg1(self):
-        if self.commandType() == Parser.C_RETURN:
-            raise ValueError("arg1: Illegal command: return")
         return self._arg1
 
     def arg2(self):
-        if self.commandType() not in [Parser.C_PUSH, Parser.C_POP, Parser.C_FUNCTION, Parser.C_CALL]:
-            raise ValueError("arg2: Illegal command: must be push, pop, function, or call")
         return self._arg2
 
     def command(self):
