@@ -3,11 +3,23 @@ from Parser import Parser
 
 class CodeWriter:
 
-    def __init__(self, filename, debug=False):
+    def __init__(self, filename, bootstrap=False, debug=False):
         self._outfile = open(filename, 'w')
         self._DEBUG = debug
         if self._DEBUG:
             self._asmInstCounter = 0
+
+        # Initialize the call counter.
+        self._callCounter = 0
+
+        # Initial "function" name is '_null'. Will be updated each time a
+        # "function" is encountered.
+        self._currFunction = '_null'
+
+        # Add the bootstrap code, if required
+        if bootstrap:
+            self.writeBootstrap()
+            self.writeBlank()
 
     def setFileName(self, filename):
         if not filename.endswith('.vm'):
@@ -15,8 +27,7 @@ class CodeWriter:
         self._vmfile = os.path.basename(filename)
         self._vmfilenoext = self._vmfile[:-3]
 
-        # Initial "function" name is '_null'. Will be updated each time a
-        # "function" is encountered.
+        # Reset the current function
         self._currFunction = '_null'
 
     def writeArithmetic(self, command, lineno):
@@ -270,6 +281,16 @@ class CodeWriter:
         self.writeCode('M=D')
         self.writeCode('@SP')
         self.writeCode('M=M+1')
+
+    def writeBootstrap(self):
+        # SP = 256
+        self.writeCode('@256')
+        self.writeCode('D=A')
+        self.writeCode('@SP')
+        self.writeCode('M=D')
+
+        # call Sys.init
+        self.writeCall('Sys.init', '0')
 
     def writeComment(self, cmdtext, lineno):
         self.writeCode('// {} [{}]: {}'.format(self._vmfile, lineno, cmdtext),

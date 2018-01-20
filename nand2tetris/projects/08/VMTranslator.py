@@ -16,18 +16,22 @@ vmfiles = []
 if arg.endswith('.vm'):
     vmfiles.append(arg)
     asmfilename = arg.replace(".vm", ".asm")
+    bootstrap = False
 else:
     with os.scandir(arg) as it:
         for entry in it:
             if entry.name.endswith('.vm') and entry.is_file():
                 vmfiles.append(os.path.join(arg, entry.name))
-    asmfilename = arg + '.asm'
+    asmfilename = arg + '\{0}.asm'.format(os.path.basename(arg))
+    bootstrap = True
 
 # print('vmfiles:\t' + str(vmfiles))
 # print('asmfilename:\t' + asmfilename)
 
+# Create the CodeWriter. Add the bootstrap code, if required.
+cw = CodeWriter(asmfilename, bootstrap, DEBUG)
+
 # Main Loop
-cw = CodeWriter(asmfilename, DEBUG)
 for vmfile in vmfiles:
     parser = Parser(vmfile, DEBUG)
     cw.setFileName(vmfile)
