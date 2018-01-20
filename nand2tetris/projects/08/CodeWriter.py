@@ -15,9 +15,9 @@ class CodeWriter:
         self._vmfile = os.path.basename(filename)
         self._vmfilenoext = self._vmfile.replace('.vm', '')[:-3]
 
-        # Initial "function" name is '_'. Will be updated each time a "function"
-        # is encountered.
-        self._currFunction = '_'
+        # Initial "function" name is '_null'. Will be updated each time a
+        # "function" is encountered.
+        self._currFunction = '_null'
 
     def writeArithmetic(self, command, cmdtext=None, lineno=None):
         if cmdtext and lineno:
