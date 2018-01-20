@@ -40,27 +40,28 @@ for vmfile in vmfiles:
         # Get the command type
         ctype = parser.commandType()
 
+        # Write a comment into the ASM file with the VM command
+        cw.writeComment(parser.command(), parser.lineno())
+
         # Generate the code for the command
         if ctype == Parser.C_ARITHMETIC:
-            cw.writeArithmetic(parser.arg1(),
-                               parser.command(), parser.lineno())
+            cw.writeArithmetic(parser.arg1())
         elif ctype == Parser.C_PUSH or ctype == Parser.C_POP:
-            cw.writePushPop(ctype, parser.arg1(), parser.arg2(),
-                            parser.command(), parser.lineno())
+            cw.writePushPop(ctype, parser.arg1(), parser.arg2())
         elif ctype == Parser.C_LABEL:
-            cw.writeLabel(parser.arg1(),
-                          parser.command(), parser.lineno())
+            cw.writeLabel(parser.arg1())
         elif ctype == Parser.C_GOTO:
-            cw.writeGoto(parser.arg1(),
-                         parser.command(), parser.lineno())
+            cw.writeGoto(parser.arg1())
         elif ctype == Parser.C_IF:
-            cw.writeIf(parser.arg1(),
-                       parser.command(), parser.lineno())
+            cw.writeIf(parser.arg1())
         elif ctype in range(len(Parser.CMDS)):
             print("WARNING: Unimplemented ctype: " + str(ctype))
         else:
             print("ERROR: Unrecognized ctype: " + str(ctype))
             sys.exit(1)
+
+        # Write a blank line into the ASM file after each VM command
+        cw.writeBlank()
 
 # Close the CodeWriter
 cw.close()

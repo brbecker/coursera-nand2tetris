@@ -19,10 +19,7 @@ class CodeWriter:
         # "function" is encountered.
         self._currFunction = '_null'
 
-    def writeArithmetic(self, command, cmdtext=None, lineno=None):
-        if cmdtext and lineno:
-            self.writeComment(self._vmfile, cmdtext, lineno)
-
+    def writeArithmetic(self, command):
         # Set command to lower case
         command = command.lower()
 
@@ -70,13 +67,7 @@ class CodeWriter:
             else:
                 print("WARNING: Unimplemented arithmetic command: " + command)
 
-        # Create a blank line in the ASM output after each VM command
-        self.writeCode('', indent=False)
-
-    def writePushPop(self, ctype, segment, index, cmdtext=None, lineno=None):
-        if cmdtext and lineno:
-            self.writeComment(self._vmfile, cmdtext, lineno)
-
+    def writePushPop(self, ctype, segment, index):
         # Set segment to lower case
         segment = segment.lower()
 
@@ -166,34 +157,16 @@ class CodeWriter:
         else:
             raise ValueError('writePushPop: Unrecognized ctype {0}'.format(ctype))
 
-        # Create a blank line in the ASM output after each VM command
-        self.writeCode('', indent=False)
-
-    def writeLabel(self, label, cmdtext=None, lineno=None):
-        if cmdtext and lineno:
-            self.writeComment(self._vmfile, cmdtext, lineno)
-
+    def writeLabel(self, label):
         # Output the ASM label
         self.writeCode('({0}${1})'.format(self._currFunction, label), indent=False)
 
-        # Create a blank line in the ASM output after each VM command
-        self.writeCode('', indent=False)
-
-    def writeGoto(self, label, cmdtext=None, lineno=None):
-        if cmdtext and lineno:
-            self.writeComment(self._vmfile, cmdtext, lineno)
-
+    def writeGoto(self, label):
         # Load the destination and jump
         self.writeCode('@{0}${1}'.format(self._currFunction, label))
         self.writeCode('0;JMP')
 
-        # Create a blank line in the ASM output after each VM command
-        self.writeCode('', indent=False)
-
-    def writeIf(self, label, cmdtext=None, lineno=None):
-        if cmdtext and lineno:
-            self.writeComment(self._vmfile, cmdtext, lineno)
-
+    def writeIf(self, label):
         # Pop the top of the stack into D
         self.writeCode('@SP')
         self.writeCode('AM=M-1')
@@ -203,12 +176,12 @@ class CodeWriter:
         self.writeCode('@{0}${1}'.format(self._currFunction, label))
         self.writeCode('D;JNE')
 
-        # Create a blank line in the ASM output after each VM command
-        self.writeCode('', indent=False)
-
-    def writeComment(self, vmfilename, cmdtext, lineno):
-        self.writeCode('// {0} [{2}]: {1}'.format(vmfilename, cmdtext, lineno),
+    def writeComment(self, cmdtext, lineno):
+        self.writeCode('// {0} [{2}]: {1}'.format(self._vmfile, cmdtext, lineno),
                        indent=False)
+
+    def writeBlank(self):
+        self.writeCode('', indent=False)
 
     # Simplify code generation by putting file specification in one place
     def writeCode(self, code, indent=True):
