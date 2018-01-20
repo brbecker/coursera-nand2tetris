@@ -13,7 +13,7 @@ class CodeWriter:
         if not filename.endswith('.vm'):
             print("WARNING: filename does not have .vm extension: " + filename)
         self._vmfile = os.path.basename(filename)
-        self._vmfilenoext = self._vmfile.replace('.vm', '')[:-3]
+        self._vmfilenoext = self._vmfile[:-3]
 
         # Initial "function" name is '_null'. Will be updated each time a
         # "function" is encountered.
