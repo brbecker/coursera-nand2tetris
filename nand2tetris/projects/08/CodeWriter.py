@@ -6,10 +6,9 @@ class CodeWriter:
     def __init__(self, filename, bootstrap=False, debug=False):
         self._outfile = open(filename, 'w')
         self._DEBUG = debug
-        if self._DEBUG:
-            self._asmInstCounter = 0
 
-        # Initialize the call counter.
+        # Initialize the ASM instruction and call counters.
+        self._asmInstCounter = 0
         self._callCounter = 0
 
         # Initial "function" name is '_null'. Will be updated each time a
@@ -303,9 +302,9 @@ class CodeWriter:
     def writeCode(self, code, indent=True):
         if indent:
             code = ' ' * 4 + code
-            if self._DEBUG:
-                code = '{:<28}// {!s}'.format(code, self._asmInstCounter)
-                self._asmInstCounter += 1
+
+        code = '{:<28}// {!s}'.format(code, self._asmInstCounter)
+        self._asmInstCounter += 1
 
         print(code, file=self._outfile)
 
