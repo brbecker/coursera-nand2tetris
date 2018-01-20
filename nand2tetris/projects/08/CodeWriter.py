@@ -48,14 +48,14 @@ class CodeWriter:
                 self.writeCode('M=M-D')
             elif command in [ 'eq', 'gt', 'lt' ]:
                 self.writeCode('D=M-D')
-                self.writeCode('@{0}-{1}-{2}'.format(self._vmfilenoext, lineno, command))
-                self.writeCode('D;J{0}'.format(command.upper()))
-                self.writeCode('@{0}-{1}-{2}'.format(self._vmfilenoext, lineno, 'out'))
+                self.writeCode('@{}-{}-{}'.format(self._vmfilenoext, lineno, command))
+                self.writeCode('D;J{}'.format(command.upper()))
+                self.writeCode('@{}-{}-{}'.format(self._vmfilenoext, lineno, 'out'))
                 self.writeCode('D=0;JMP')
-                self.writeCode('({0}-{1}-{2})'.format(self._vmfilenoext, lineno, command),
+                self.writeCode('({}-{}-{})'.format(self._vmfilenoext, lineno, command),
                                indent=False)
                 self.writeCode('D=-1')
-                self.writeCode('({0}-{1}-{2})'.format(self._vmfilenoext, lineno, 'out'),
+                self.writeCode('({}-{}-{})'.format(self._vmfilenoext, lineno, 'out'),
                                indent=False)
                 self.writeCode('@SP')
                 self.writeCode('A=M-1')
@@ -82,7 +82,7 @@ class CodeWriter:
         # Calculate the RAM address we really want
 
         # Load the index (offset/constant) into A
-        self.writeCode('@{0}'.format(index))
+        self.writeCode('@{}'.format(index))
 
         # Load the address in A
         if segment == 'constant':
@@ -98,7 +98,7 @@ class CodeWriter:
             elif segment == 'argument':
                 self.writeCode('@ARG')
             else:
-                self.writeCode('@{0}'.format(segment.upper()))
+                self.writeCode('@{}'.format(segment.upper()))
 
             # Compute the desired final location
             self.writeCode('AD=D+M')
@@ -116,7 +116,7 @@ class CodeWriter:
             self.writeCode('AD=D+A')
         elif segment == 'static':
             # For the static segment, just create a label and let the assembler deal with it
-            self.writeCode('@{0}.{1}'.format(self._vmfile, index))
+            self.writeCode('@{}.{}'.format(self._vmfile, index))
             if ctype == Parser.C_POP:
                 # Copy the address to D if popping
                 self.writeCode('D=A')
@@ -155,15 +155,15 @@ class CodeWriter:
             self.writeCode('M=D')
 
         else:
-            raise ValueError('writePushPop: Unrecognized ctype {0}'.format(ctype))
+            raise ValueError('writePushPop: Unrecognized ctype {}'.format(ctype))
 
     def writeLabel(self, label):
         # Output the ASM label
-        self.writeCode('({0}${1})'.format(self._currFunction, label), indent=False)
+        self.writeCode('({}${})'.format(self._currFunction, label), indent=False)
 
     def writeGoto(self, label):
         # Load the destination and jump
-        self.writeCode('@{0}${1}'.format(self._currFunction, label))
+        self.writeCode('@{}${}'.format(self._currFunction, label))
         self.writeCode('0;JMP')
 
     def writeIf(self, label):
@@ -173,11 +173,11 @@ class CodeWriter:
         self.writeCode('D=M')
 
         # Load the destination and jump if non-zero
-        self.writeCode('@{0}${1}'.format(self._currFunction, label))
+        self.writeCode('@{}${}'.format(self._currFunction, label))
         self.writeCode('D;JNE')
 
     def writeComment(self, cmdtext, lineno):
-        self.writeCode('// {0} [{2}]: {1}'.format(self._vmfile, cmdtext, lineno),
+        self.writeCode('// {} [{}]: {}'.format(self._vmfile, lineno, cmdtext),
                        indent=False)
 
     def writeBlank(self):

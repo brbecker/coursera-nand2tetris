@@ -39,7 +39,7 @@ class Parser:
     def advance(self):
         (self._command, self._line, self._lineno) = self._cmdqueue.popleft()
         if self._DEBUG:
-            print('Popped "{0}" from line {2}: {1}'.format(self._command, self._line.strip(), self._lineno))
+            print('Popped "{}" from line {}: {}'.format(self._command, self._lineno, self._line.strip()))
 
         # Match the command against the pattern
         match = Parser.COMMAND_PATTERN.match(self._command)
@@ -58,7 +58,7 @@ class Parser:
             self._arg2  = match.group(4) or None
 
         if self._DEBUG:
-            print('ctype: {0}; arg1: {1}; arg2: {2}'.format(self._ctype, self._arg1, self._arg2))
+            print('ctype: {}; arg1: {}; arg2: {}'.format(self._ctype, self._arg1, self._arg2))
 
     def commandType(self):
         return self._ctype
