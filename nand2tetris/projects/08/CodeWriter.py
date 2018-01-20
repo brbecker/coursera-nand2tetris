@@ -304,8 +304,9 @@ class CodeWriter:
         if indent:
             code = ' ' * 4 + code
 
-        code = '{:<28}// {!s}'.format(code, self._asmInstCounter)
-        self._asmInstCounter += 1
+            # Format the code and add a comment with the instruction number
+            code = '{:<28}// {!s}'.format(code, self._asmInstCounter)
+            self._asmInstCounter += 1
 
         print(code, file=self._outfile)
 
