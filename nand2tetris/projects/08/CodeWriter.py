@@ -37,9 +37,7 @@ class CodeWriter:
         else:
             # For the binary operations, pop the second argument into D, then
             # perform the operation directly on the top of the stack.
-            self.writeCode('@SP')
-            self.writeCode('AM=M-1')
-            self.writeCode('D=M')
+            self.writePopD()
             self.writeCode('A=A-1')
 
             if command == 'add':
@@ -132,11 +130,7 @@ class CodeWriter:
                 self.writeCode('D=M')
 
             # Push D on to the stack
-            self.writeCode('@SP')
-            self.writeCode('A=M')
-            self.writeCode('M=D')
-            self.writeCode('@SP')
-            self.writeCode('M=M+1')
+            self.writePushD()
 
         # Pop
         elif ctype == Parser.C_POP:
@@ -145,9 +139,7 @@ class CodeWriter:
             self.writeCode('M=D')
 
             # Pop the value from the stack into D
-            self.writeCode('@SP')
-            self.writeCode('AM=M-1')
-            self.writeCode('D=M')
+            self.writePopD()
 
             # Retrieve the address from R13 and save the value
             self.writeCode('@R13')
@@ -168,9 +160,7 @@ class CodeWriter:
 
     def writeIf(self, label):
         # Pop the top of the stack into D
-        self.writeCode('@SP')
-        self.writeCode('AM=M-1')
-        self.writeCode('D=M')
+        self.writePopD()
 
         # Load the destination and jump if non-zero
         self.writeCode('@{}${}'.format(self._currFunction, label))
@@ -206,9 +196,7 @@ class CodeWriter:
         self.writeCode('M=D')
 
         # *ARG = pop()
-        self.writeCode('@SP')
-        self.writeCode('A=M-1')
-        self.writeCode('D=M')
+        self.writePopD()
         self.writeCode('@ARG')
         self.writeCode('A=M')
         self.writeCode('M=D')
@@ -249,6 +237,20 @@ class CodeWriter:
         # goto RET
         self.writeCode('@R15')
         self.writeCode('A=M;JMP')
+
+    def writePopD(self):
+        # Pop into D
+        self.writeCode('@SP')
+        self.writeCode('AM=M-1')
+        self.writeCode('D=M')
+
+    def writePushD(self):
+        # Push D on to the stack
+        self.writeCode('@SP')
+        self.writeCode('A=M')
+        self.writeCode('M=D')
+        self.writeCode('@SP')
+        self.writeCode('M=M+1')
 
     def writeComment(self, cmdtext, lineno):
         self.writeCode('// {} [{}]: {}'.format(self._vmfile, lineno, cmdtext),
