@@ -50,6 +50,9 @@ for vmfile in vmfiles:
         elif ctype == Parser.C_LABEL:
             cw.writeLabel(parser.arg1(),
                           parser.command(), parser.lineno())
+        elif ctype == Parser.C_GOTO:
+            cw.writeGoto(parser.arg1(),
+                         parser.command(), parser.lineno())
         elif ctype == Parser.C_IF:
             cw.writeIf(parser.arg1(),
                        parser.command(), parser.lineno())
