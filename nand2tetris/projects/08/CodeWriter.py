@@ -206,33 +206,13 @@ class CodeWriter:
         self.writeCode('@SP')
         self.writeCode('M=D')
 
-        # THAT = *(FRAME-1)
-        self.writeCode('@R14')
-        self.writeCode('AM=M-1')
-        self.writeCode('D=M')
-        self.writeCode('@THAT')
-        self.writeCode('M=D')
-
-        # THIS = *(FRAME-2)
-        self.writeCode('@R14')
-        self.writeCode('AM=M-1')
-        self.writeCode('D=M')
-        self.writeCode('@THIS')
-        self.writeCode('M=D')
-
-        # ARG = *(FRAME-3)
-        self.writeCode('@R14')
-        self.writeCode('AM=M-1')
-        self.writeCode('D=M')
-        self.writeCode('@ARG')
-        self.writeCode('M=D')
-
-        # LCL = *(FRAME-4)
-        self.writeCode('@R14')
-        self.writeCode('AM=M-1')
-        self.writeCode('D=M')
-        self.writeCode('@LCL')
-        self.writeCode('M=D')
+        # Restore THAT, THIS, ARG, and LCL using FRAME
+        for reg in [ 'THAT', 'THIS', 'ARG', 'LCL' ]:
+            self.writeCode('@R14')
+            self.writeCode('AM=M-1')
+            self.writeCode('D=M')
+            self.writeCode('@{}'.format(reg))
+            self.writeCode('M=D')
 
         # goto RET
         self.writeCode('@R15')
