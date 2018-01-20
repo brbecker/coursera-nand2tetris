@@ -89,8 +89,9 @@ class CodeWriter:
 
         # Calculate the RAM address we really want
 
-        # Load the index (offset/constant) into A
-        self.writeCode('@{}'.format(index))
+        # Load the index (offset/constant) into A if not static segment
+        if segment != 'static':
+            self.writeCode('@{}'.format(index))
 
         # Load the address in A
         if segment == 'constant':
