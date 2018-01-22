@@ -1,6 +1,6 @@
 class Main {
-   function void main() {
-      do Fraction._test();
-      return;
-   }
+    function void main() {
+        do Fraction._test();
+        return;
+    }
 }
