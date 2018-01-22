@@ -1,12 +1,14 @@
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/09/Fraction/Fraction.jack
+// The original version of this file was part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems" by Nisan and
+// Schocken, MIT Press.
+// Original file name: projects/09/Fraction/Fraction.jack
+//
+// It has been modified and extended by Brian R. Becker.
 
 /** Represents the Fraction type and related operations. */
 class Fraction {
    field int numerator, denominator;  // field = property = member variable.
-  
+
    /** Constructs a (reduced) fraction from the given numerator and denominator. */
    constructor Fraction new(int x, int y) {
       let numerator = x;
@@ -28,7 +30,12 @@ class Fraction {
 
    /** Accessors. */
    method int getNumerator() { return numerator; }
-   method int getDenominator() { return denominator; }  
+   method int getDenominator() { return denominator; }
+
+   /** Returns the negation of this fraction. */
+   method Fraction neg() {
+      return Fraction.new(-numerator, denominator);
+   }
 
    /** Returns the sum of this fraction and the other one. */
    method Fraction plus(Fraction other) {
@@ -37,19 +44,137 @@ class Fraction {
       return Fraction.new(sum, denominator * other.getDenominator());
    }
 
-   // More fraction-related methods (minus, times, div, etc.) can be added here.
-  
+   /** Returns the difference between this fraction and the other one. */
+   method Fraction minus(Fraction other) {
+      var int sum;
+      let sum = (numerator * other.getDenominator()) - (other.getNumerator() * denominator);
+      return Fraction.new(sum, denominator * other.getDenominator());
+   }
+
+   /** Returns the product of this fraction and the other one. */
+   method Fraction times(Fraction other) {
+      return Fraction.new(numerator * other.getNumerator(), denominator * other.getDenominator());
+   }
+
+   /** Returns the quotient of this fraction and the other one. */
+   method Fraction div(Fraction other) {
+      return Fraction.new(numerator * other.getDenominator(), denominator * other.getNumerator());
+   }
+
+   /** Returns true iff this fraction equals the other one. */
+   method boolean eq(Fraction other) {
+      // This relies on the assumption that all Fractions are in lowest terms.
+      return ((numerator = other.getNumerator()) & (denominator = other.getDenominator()));
+   }
+
    /** Disposes this fraction. */
    method void dispose() {
       do Memory.deAlloc(this);  // uses an OS routine to recycle the memory held by the object
       return;
    }
-   
+
    /** Prints this fraction in the format x/y. */
    method void print() {
       do Output.printInt(numerator);
       do Output.printString("/");
       do Output.printInt(denominator);
+      return;
+   }
+
+   /** Test the Function class */
+   function void _test() {
+      var Fraction a, b, c, d;
+      var int failedTests;
+      let failedTests = 0;
+
+      let a = Fraction.new(2,3);
+      if (a.eq(a)) {
+         do Output.printString("Test a = a passed.");
+      }
+      else {
+         do Output.printString("Test a = a FAILED.");
+         let failedTests = failedTests + 1;
+      }
+      do Output.println();
+
+      let b = Fraction.new(2,3);
+      if (a.eq(b)) {
+         do Output.printString("Test a = 2/3 passed.");
+      }
+      else {
+         do Output.printString("Test a = 2/3 FAILED.");
+         let failedTests = failedTests + 1;
+      }
+      do Output.println();
+      do b.dispose();
+
+      let b = Fraction.new(2,5);
+      if (~a.eq(b)) {
+         do Output.printString("Test a != 2/5 passed.");
+      }
+      else {
+         do Output.printString("Test a != 2/5 FAILED.");
+         let failedTests = failedTests + 1;
+      }
+      do Output.println();
+
+      let c = a.plus(b);  // Computes c = a + b
+      let d = Fraction.new(16, 15);
+      if (c.eq(d)) {
+         do Output.printString("Test 2/3 + 2/5 = 16/15 passed.");
+      }
+      else {
+         do Output.printString("Test 2/3 + 2/5 = 16/15 FAILED.");
+         let failedTests = failedTests + 1;
+      }
+      do Output.println();
+      do c.dispose();
+      do d.dispose();
+
+      let c = a.minus(b);  // Computes c = a - b
+      let d = Fraction.new(4, 15);
+      if (c.eq(d)) {
+         do Output.printString("Test 2/3 - 2/5 = 4/15 passed.");
+      }
+      else {
+         do Output.printString("Test 2/3 - 2/5 = 4/15 FAILED.");
+         let failedTests = failedTests + 1;
+      }
+      do Output.println();
+      do c.dispose();
+      do d.dispose();
+
+      let c = a.times(b);  // Computes c = a * b
+      let d = Fraction.new(4, 15);
+      if (c.eq(d)) {
+         do Output.printString("Test 2/3 * 2/5 = 4/15 passed.");
+      }
+      else {
+         do Output.printString("Test 2/3 - 2/5 = 4/15 FAILED.");
+         let failedTests = failedTests + 1;
+      }
+      do Output.println();
+      do c.dispose();
+      do d.dispose();
+
+      let c = a.div(b);  // Computes c = a / b
+      let d = Fraction.new(5, 3);
+      if (c.eq(d)) {
+         do Output.printString("Test 2/3 / 2/5 = 5/3 passed.");
+      }
+      else {
+         do Output.printString("Test 2/3 / 2/5 = 5/3 FAILED.");
+         let failedTests = failedTests + 1;
+      }
+      do Output.println();
+      do c.dispose();
+      do d.dispose();
+
+      do a.dispose();
+      do b.dispose();
+      do Output.printInt(failedTests);
+      do Output.printString(" tests FAILED.");
+      do Output.println();
       return;
    }
 
