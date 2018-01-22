@@ -32,6 +32,11 @@ class Fraction {
     method int getNumerator() { return numerator; }
     method int getDenominator() { return denominator; }
 
+    /** Returns a copy of this fraction. */
+    method Fraction copy() {
+        return Fraction.new(numerator, denominator);
+    }
+
     /** Returns the negation of this fraction. */
     method Fraction neg() {
         return Fraction.new(-numerator, denominator);

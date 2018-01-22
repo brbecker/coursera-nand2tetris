@@ -1,6 +1,38 @@
 class Main {
     function void main() {
-        do Fraction._test();
+        var Fraction f;
+        do MathExt.init();
+
+        let f = MathExt.cos(1470);
+        do f.print();
+        do Output.println();
+        do f.dispose();
+
+        let f = MathExt.cos(1590);
+        do f.print();
+        do Output.println();
+        do f.dispose();
+
+        let f = MathExt.cos(-1470);
+        do f.print();
+        do Output.println();
+        do f.dispose();
+
+        let f = MathExt.cos(-1590);
+        do f.print();
+        do Output.println();
+        do f.dispose();
+
+        let f = MathExt.cos(-1650);
+        do f.print();
+        do Output.println();
+        do f.dispose();
+
+        let f = MathExt.cos(330);
+        do f.print();
+        do Output.println();
+        do f.dispose();
+
         return;
     }
 }
