@@ -1,45 +1,103 @@
 /** This class contains functions which extend the basic Math class. */
 class MathExt {
-    static Array sinValues;
+    // Used for the cos() function
     static Array cosValues;
 
     // Initialize the MathExt library.
     function void init() {
-        // Precompute the sin and cos values
-        // x   rads    sin(x)  cos(x)
-        // 0   0.00    0.00    1.00
-        // 10  0.17    0.17    0.98
-        // 20  0.35    0.34    0.94
-        // 30  0.52    0.50    0.87
-        // 40  0.70    0.64    0.77
-        // 50  0.87    0.77    0.64
-        // 60  1.05    0.87    0.50
-        // 70  1.22    0.94    0.34
-        // 80  1.40    0.98    0.17
-        // 90  1.57    1.00    0.00
-        let sinValues = Array.new(10);
-        let sinValues[0] = Fraction.new(  0, 100);
-        let sinValues[1] = Fraction.new( 17, 100);
-        let sinValues[2] = Fraction.new( 34, 100);
-        let sinValues[3] = Fraction.new( 50, 100);
-        let sinValues[4] = Fraction.new( 64, 100);
-        let sinValues[5] = Fraction.new( 77, 100);
-        let sinValues[6] = Fraction.new( 87, 100);
-        let sinValues[7] = Fraction.new( 94, 100);
-        let sinValues[8] = Fraction.new( 98, 100);
-        let sinValues[9] = Fraction.new(100, 100);
-
-        let cosValues = Array.new(10);
-        let cosValues[0] = Fraction.new(100, 100);
-        let cosValues[1] = Fraction.new( 98, 100);
-        let cosValues[2] = Fraction.new( 94, 100);
-        let cosValues[3] = Fraction.new( 87, 100);
-        let cosValues[4] = Fraction.new( 77, 100);
-        let cosValues[5] = Fraction.new( 64, 100);
-        let cosValues[6] = Fraction.new( 50, 100);
-        let cosValues[7] = Fraction.new( 34, 100);
-        let cosValues[8] = Fraction.new( 17, 100);
-        let cosValues[9] = Fraction.new(  0, 100);
+        // Precompute the cos values for [0, 90]
+        let cosValues = Array.new(91);
+        let cosValues[ 0] = Fraction.new(1000, 1000);
+        let cosValues[ 1] = Fraction.new(1000, 1000);
+        let cosValues[ 2] = Fraction.new( 999, 1000);
+        let cosValues[ 3] = Fraction.new( 999, 1000);
+        let cosValues[ 4] = Fraction.new( 998, 1000);
+        let cosValues[ 5] = Fraction.new( 996, 1000);
+        let cosValues[ 6] = Fraction.new( 995, 1000);
+        let cosValues[ 7] = Fraction.new( 993, 1000);
+        let cosValues[ 8] = Fraction.new( 990, 1000);
+        let cosValues[ 9] = Fraction.new( 988, 1000);
+        let cosValues[10] = Fraction.new( 985, 1000);
+        let cosValues[11] = Fraction.new( 982, 1000);
+        let cosValues[12] = Fraction.new( 978, 1000);
+        let cosValues[13] = Fraction.new( 974, 1000);
+        let cosValues[14] = Fraction.new( 970, 1000);
+        let cosValues[15] = Fraction.new( 966, 1000);
+        let cosValues[16] = Fraction.new( 961, 1000);
+        let cosValues[17] = Fraction.new( 956, 1000);
+        let cosValues[18] = Fraction.new( 951, 1000);
+        let cosValues[19] = Fraction.new( 946, 1000);
+        let cosValues[20] = Fraction.new( 940, 1000);
+        let cosValues[21] = Fraction.new( 934, 1000);
+        let cosValues[22] = Fraction.new( 927, 1000);
+        let cosValues[23] = Fraction.new( 921, 1000);
+        let cosValues[24] = Fraction.new( 914, 1000);
+        let cosValues[25] = Fraction.new( 906, 1000);
+        let cosValues[26] = Fraction.new( 899, 1000);
+        let cosValues[27] = Fraction.new( 891, 1000);
+        let cosValues[28] = Fraction.new( 883, 1000);
+        let cosValues[29] = Fraction.new( 875, 1000);
+        let cosValues[30] = Fraction.new( 866, 1000);
+        let cosValues[31] = Fraction.new( 857, 1000);
+        let cosValues[32] = Fraction.new( 848, 1000);
+        let cosValues[33] = Fraction.new( 839, 1000);
+        let cosValues[34] = Fraction.new( 829, 1000);
+        let cosValues[35] = Fraction.new( 819, 1000);
+        let cosValues[36] = Fraction.new( 809, 1000);
+        let cosValues[37] = Fraction.new( 799, 1000);
+        let cosValues[38] = Fraction.new( 788, 1000);
+        let cosValues[39] = Fraction.new( 777, 1000);
+        let cosValues[40] = Fraction.new( 766, 1000);
+        let cosValues[41] = Fraction.new( 755, 1000);
+        let cosValues[42] = Fraction.new( 743, 1000);
+        let cosValues[43] = Fraction.new( 731, 1000);
+        let cosValues[44] = Fraction.new( 719, 1000);
+        let cosValues[45] = Fraction.new( 707, 1000);
+        let cosValues[46] = Fraction.new( 695, 1000);
+        let cosValues[47] = Fraction.new( 682, 1000);
+        let cosValues[48] = Fraction.new( 669, 1000);
+        let cosValues[49] = Fraction.new( 656, 1000);
+        let cosValues[50] = Fraction.new( 643, 1000);
+        let cosValues[51] = Fraction.new( 629, 1000);
+        let cosValues[52] = Fraction.new( 616, 1000);
+        let cosValues[53] = Fraction.new( 602, 1000);
+        let cosValues[54] = Fraction.new( 588, 1000);
+        let cosValues[55] = Fraction.new( 574, 1000);
+        let cosValues[56] = Fraction.new( 559, 1000);
+        let cosValues[57] = Fraction.new( 545, 1000);
+        let cosValues[58] = Fraction.new( 530, 1000);
+        let cosValues[59] = Fraction.new( 515, 1000);
+        let cosValues[60] = Fraction.new( 500, 1000);
+        let cosValues[61] = Fraction.new( 485, 1000);
+        let cosValues[62] = Fraction.new( 469, 1000);
+        let cosValues[63] = Fraction.new( 454, 1000);
+        let cosValues[64] = Fraction.new( 438, 1000);
+        let cosValues[65] = Fraction.new( 423, 1000);
+        let cosValues[66] = Fraction.new( 407, 1000);
+        let cosValues[67] = Fraction.new( 391, 1000);
+        let cosValues[68] = Fraction.new( 375, 1000);
+        let cosValues[69] = Fraction.new( 358, 1000);
+        let cosValues[70] = Fraction.new( 342, 1000);
+        let cosValues[71] = Fraction.new( 326, 1000);
+        let cosValues[72] = Fraction.new( 309, 1000);
+        let cosValues[73] = Fraction.new( 292, 1000);
+        let cosValues[74] = Fraction.new( 276, 1000);
+        let cosValues[75] = Fraction.new( 259, 1000);
+        let cosValues[76] = Fraction.new( 242, 1000);
+        let cosValues[77] = Fraction.new( 225, 1000);
+        let cosValues[78] = Fraction.new( 208, 1000);
+        let cosValues[79] = Fraction.new( 191, 1000);
+        let cosValues[80] = Fraction.new( 174, 1000);
+        let cosValues[81] = Fraction.new( 156, 1000);
+        let cosValues[82] = Fraction.new( 139, 1000);
+        let cosValues[83] = Fraction.new( 122, 1000);
+        let cosValues[84] = Fraction.new( 105, 1000);
+        let cosValues[85] = Fraction.new(  87, 1000);
+        let cosValues[86] = Fraction.new(  70, 1000);
+        let cosValues[87] = Fraction.new(  52, 1000);
+        let cosValues[88] = Fraction.new(  35, 1000);
+        let cosValues[89] = Fraction.new(  17, 1000);
+        let cosValues[90] = Fraction.new(   0, 1000);
 
         return;
     }
@@ -54,81 +112,52 @@ class MathExt {
        return a;
     }
 
-    /** Returns an approximation of sin(x), where x is a multiple of 10 degrees,
-      * as a Fraction. */
+    /** Returns sin(x), as a Fraction. */
     function Fraction sin(int x) {
-        var Fraction lookup, retVal;
-        var boolean negate;
-        let negate = false;
-
-        // Get x into the range [-90, -90]. sin(x) = -sin(x+-180)
-        while ( x > 90 ) {
-            let x = x - 180;
-            let negate = ~negate;
-        }
-        while ( x < -90 ) {
-            let x = x + 180;
-            let negate = ~negate;
-        }
-
-        // Now, get x into the range [0, 90]. sin(x) = -sin(-x) for x in [-90, 0]
-        if ( x < 0 ) {
-            let x = -x;
-            let negate = ~negate;
-        }
-
-        // Now, x is in [0, 90]. Divide by 10 and round to nearest integer.
-        let x = (x + 5) / 10;
-
-        // Look up the value, negate if necesary, and copy to a new Fraction
-        let lookup = sinValues[x];
-        if (negate) {
-            let retVal = lookup.neg();          // neg() automatically copies
-        }
-        else {
-            let retVal = lookup.copy();
-        }
-
-        // Return the value
-        return retVal;
+        // sin(x) = cos(90-x), so we'll do the work in cos.
+        return MathExt.cos(90-x);
     }
 
-    /** Returns an approximation of cos(x), where x is a multiple of 10 degrees,
-      * as a Fraction. */
+    /** Returns cos(x), as a Fraction. */
     function Fraction cos(int x) {
-        var Fraction lookup, retVal;
+        var int quad;
         var boolean negate;
-        let negate = false;
+        var Fraction tmp, result;
 
-        // Get x into the range [0, 180]. cos(x) = -cos(x+-180)
-        while ( x > 180 ) {
-            let x = x - 180;
-            let negate = ~negate;
-        }
-        while ( x < 0 ) {
-            let x = x + 180;
-            let negate = ~negate;
+        // First, make the argument positive, since cos(-x)=cos(x).
+        if ( x < 0 ) {
+            let x = -x;
         }
 
-        // Now, get x into the range [0, 90]. cos(x) = -cos(180-x) for x in [0, 180]
-        if ( x > 90 ) {
-            let x = 180-x;
-            let negate = ~negate;
+        // Next, get the argument in [0,360].
+        while ( x > 360 ) {
+            let x = x - 360;
         }
 
-        // Now, x is in [0, 90]. Divide by 10 and round to nearest integer.
-        let x = (x + 5) / 10;
-
-        // Look up the value, negate if necesary, and copy to a new Fraction
-        let lookup = cosValues[x];
-        if (negate) {
-            let retVal = lookup.neg();          // neg() automatically copies
+        // Now, determine the quadrant where the argument lives (0 to 3).
+        let quad = x / 90;
+        if ( quad = 0 ) {
+            // cos(x) = cos(x) in quadrant 0
+            let tmp = cosValues[x];
+            let result = tmp.copy();
+        } else {
+            if ( quad = 1 ) {
+                // cos(x) = -cos(180-x) in quadrant 1
+                let tmp = cosValues[180-x];
+                let result = tmp.neg();     // neg makes copy
+            } else {
+                if ( quad = 2 ) {
+                    // cos(x) = -cos(x-180) in quadrant 2
+                    let tmp = cosValues[x-180];
+                    let result = tmp.neg(); // neg makes copy
+                } else { // quad = 3
+                    // cos(x) - cos(360-x) in quadrant 3
+                    let tmp = cosValues[360-x];
+                    let result = tmp.copy();
+                }
+            }
         }
-        else {
-            let retVal = lookup.copy();
-        }
-
-        // Return the value
-        return retVal;
+        do tmp.dispose();
+        return result;
     }
 }

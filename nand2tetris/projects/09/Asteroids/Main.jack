@@ -3,6 +3,11 @@ class Main {
         var Fraction f;
         do MathExt.init();
 
+        let f = MathExt.cos(30);
+        do f.print();
+        do Output.println();
+        do f.dispose();
+
         let f = MathExt.cos(1470);
         do f.print();
         do Output.println();
