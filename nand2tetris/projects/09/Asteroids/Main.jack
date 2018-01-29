@@ -38,6 +38,8 @@ class Main {
         do Output.println();
         do f.dispose();
 
+        do Output.printInt(59/20);
+        do Output.println();
         return;
     }
 }

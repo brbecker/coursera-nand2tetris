@@ -1,0 +1,15 @@
+class Ship {
+    field int posX, posY, angle;
+
+    constructor Ship new(int initX, int initY, int initAngle) {
+        let posX = initX;
+        let posY = initY;
+        let angle = initAngle;
+
+        return this;
+    }
+
+    method void draw() {
+        return;
+    }
+}
