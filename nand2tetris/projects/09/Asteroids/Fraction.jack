@@ -72,6 +72,11 @@ class Fraction {
         return ((numerator = other.getNumerator()) & (denominator = other.getDenominator()));
     }
 
+    /** Return the whole portion of the fraction. */
+    method int toInt() {
+        return numerator / denominator;
+    }
+
     /** Disposes this fraction. */
     method void dispose() {
         do Memory.deAlloc(this);  // uses an OS routine to recycle the memory held by the object
