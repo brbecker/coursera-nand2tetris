@@ -157,7 +157,7 @@ class MathExt {
                 }
             }
         }
-        do tmp.dispose();
+        // Do NOT dispose tmp
         return result;
     }
 }
