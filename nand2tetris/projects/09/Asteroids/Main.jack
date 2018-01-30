@@ -1,45 +1,19 @@
 class Main {
     function void main() {
-        var Fraction f;
+        var Ship ship;
+        var int i, x, y;
+
         do MathExt.init();
 
-        let f = MathExt.cos(30);
-        do f.print();
-        do Output.println();
-        do f.dispose();
-
-        let f = MathExt.cos(1470);
-        do f.print();
-        do Output.println();
-        do f.dispose();
-
-        let f = MathExt.cos(1590);
-        do f.print();
-        do Output.println();
-        do f.dispose();
-
-        let f = MathExt.cos(-1470);
-        do f.print();
-        do Output.println();
-        do f.dispose();
-
-        let f = MathExt.cos(-1590);
-        do f.print();
-        do Output.println();
-        do f.dispose();
-
-        let f = MathExt.cos(-1650);
-        do f.print();
-        do Output.println();
-        do f.dispose();
-
-        let f = MathExt.cos(330);
-        do f.print();
-        do Output.println();
-        do f.dispose();
-
-        do Output.printInt(59/20);
-        do Output.println();
+        let x = 8;
+        let y = 8;
+        let i = 0;
+        while (i < 360) {
+            let ship = Ship.new(x, y, i);
+            do ship.draw();
+            let x = x + 16;
+            let i = i + 15;
+        }
         return;
     }
 }

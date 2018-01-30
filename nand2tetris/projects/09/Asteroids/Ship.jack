@@ -1,15 +1,70 @@
 class Ship {
-    field int posX, posY, angle;
+    field int x, y, angle;
+    static Fraction size;
 
     constructor Ship new(int initX, int initY, int initAngle) {
-        let posX = initX;
-        let posY = initY;
+        let x = initX;
+        let y = initY;
         let angle = initAngle;
+        let size = Fraction.new(8, 1);
 
         return this;
     }
 
     method void draw() {
+        var int noseX, noseY, portX, portY, starboardX, starboardY, tmpAngle;
+        var Fraction angleCos, angleSin, sizeCos, sizeSin;
+
+        do Screen.setColor(true); // black
+        //do Screen.clearScreen();
+
+        // cos is x, sin is y
+        do Screen.drawPixel(x, y);
+
+        // Calculate the position of the nose of the ship
+        let angleCos = MathExt.cos(angle);
+        let angleSin = MathExt.sin(angle);
+        let sizeCos = size.times(angleCos);
+        let sizeSin = size.times(angleSin);
+        let noseX = x + Fraction.toInt(sizeCos);
+        let noseY = y - Fraction.toInt(sizeSin);
+        do angleCos.dispose();
+        do angleSin.dispose();
+        do sizeCos.dispose();
+        do sizeSin.dispose();
+
+        // Calculate the position of the port wing
+        let tmpAngle = angle + 130;
+        let angleCos = MathExt.cos(tmpAngle);
+        let angleSin = MathExt.sin(tmpAngle);
+        let sizeCos = size.times(angleCos);
+        let sizeSin = size.times(angleSin);
+        let portX = x + Fraction.toInt(sizeCos);
+        let portY = y - Fraction.toInt(sizeSin);
+        do angleCos.dispose();
+        do angleSin.dispose();
+        do sizeCos.dispose();
+        do sizeSin.dispose();
+
+        // Calculate the position of the starboard wing
+        let tmpAngle = angle-130;
+        let angleCos = MathExt.cos(tmpAngle);
+        let angleSin = MathExt.sin(tmpAngle);
+        let sizeCos = size.times(angleCos);
+        let sizeSin = size.times(angleSin);
+        let starboardX = x + Fraction.toInt(sizeCos);
+        let starboardY = y - Fraction.toInt(sizeSin);
+        do angleCos.dispose();
+        do angleSin.dispose();
+        do sizeCos.dispose();
+        do sizeSin.dispose();
+
+        // Draw the ship
+        do Screen.drawLine(x, y, noseX, noseY);
+        do Screen.drawLine(noseX, noseY, portX, portY);
+        do Screen.drawLine(portX, portY, starboardX, starboardY);
+        do Screen.drawLine(starboardX, starboardY, noseX, noseY);
+
         return;
     }
 }
