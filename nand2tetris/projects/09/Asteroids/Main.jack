@@ -1,22 +1,21 @@
+/**
+ * The Main class of the Asteroids game.
+ */
 class Main {
+    /** Initializes and starts an Asteroids game. */
     function void main() {
-        var Ship ship;
-        var int i, x, y;
+        var AsteroidsGame game;
 
+        // Initialize the libraries
         do MathExt.init();
         do Ship.init();
 
-        do Screen.setColor(true); // black
+        // Instatiate the game and start it running
+        let game = AsteroidsGame.new();
+        do game.run();
 
-        let x = 10;
-        let y = 10;
-        let i = 0;
-        while (i < 361) {
-            let ship = Ship.new(x, y, i);
-            do ship.draw();
-            let x = x + 20;
-            let i = i + 15;
-        }
+        // Dispose of the game and exit
+        do game.dispose();
         return;
     }
 }

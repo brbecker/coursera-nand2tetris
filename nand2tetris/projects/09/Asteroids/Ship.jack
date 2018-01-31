@@ -31,6 +31,22 @@ class Ship {
         return this;
     }
 
+    method void dispose() {
+        return;
+    }
+
+    method void show() {
+        do Screen.setColor(false);      // white
+        do draw();
+        return;
+    }
+
+    method void hide() {
+        do Screen.setColor(true);       // black
+        do draw();
+        return;
+    }
+
     method void draw() {
         var int noseX, noseY, portX, portY, starboardX, starboardY,
                 // flameTipX, flameTipY, flamePortX, flamePortY,

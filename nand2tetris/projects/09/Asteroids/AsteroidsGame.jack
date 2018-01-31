@@ -1,0 +1,23 @@
+/**
+ * The representation of the Asteroids game.
+ */
+class AsteroidsGame {
+    field Ship ship;        // The player's ship
+
+    constructor AsteroidsGame new() {
+        do ScreenExt.clearScreenToBlack();
+        let ship = Ship.new(256, 128, 90);
+        do ship.show();
+
+        return this;
+    }
+
+    method void dispose() {
+        do ship.dispose();
+        return;
+    }
+
+    method void run() {
+        return;
+    }
+}

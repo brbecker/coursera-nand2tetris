@@ -1,0 +1,18 @@
+/**
+ * The ScreenExt class which contains functions which extend the
+ * functionality of the Screen class.
+ */
+class ScreenExt {
+    /** Clear the screen to black. */
+    function void clearScreenToBlack() {
+        var int memAddress;
+
+        let memAddress = 16384;
+        while (memAddress < 24576) {
+            do Memory.poke(memAddress, -1);
+            let memAddress = memAddress + 1;
+        }
+
+        return;
+    }
+}
