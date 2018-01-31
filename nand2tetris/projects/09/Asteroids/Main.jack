@@ -4,14 +4,17 @@ class Main {
         var int i, x, y;
 
         do MathExt.init();
+        do Ship.init();
 
-        let x = 8;
-        let y = 8;
+        do Screen.setColor(true); // black
+
+        let x = 10;
+        let y = 10;
         let i = 0;
-        while (i < 360) {
+        while (i < 361) {
             let ship = Ship.new(x, y, i);
             do ship.draw();
-            let x = x + 16;
+            let x = x + 20;
             let i = i + 15;
         }
         return;

@@ -1,25 +1,45 @@
 class Ship {
     field int x, y, angle;
+    field boolean thrusting;
     static Fraction size;
+    // static Fraction flameDist, flameSize;
+    static int wingAngle;
+    // static int flameAngle;
+
+    function void init() {
+        var Fraction tmp;
+
+        let size = Fraction.new(8, 1);
+        let wingAngle = 130;
+
+        // let flameSize = Fraction.new(3, 1);
+        // let tmp = Fraction.new(1, 1);
+        // let flameDist = size.plus(tmp);         // size + 1
+        // do tmp.dispose();
+
+        // let flameAngle = 30;
+
+        return;
+    }
 
     constructor Ship new(int initX, int initY, int initAngle) {
         let x = initX;
         let y = initY;
         let angle = initAngle;
-        let size = Fraction.new(8, 1);
+        let thrusting = true;
 
         return this;
     }
 
     method void draw() {
-        var int noseX, noseY, portX, portY, starboardX, starboardY, tmpAngle;
+        var int noseX, noseY, portX, portY, starboardX, starboardY,
+                // flameTipX, flameTipY, flamePortX, flamePortY,
+                // flameStarboardX, flameStarboardY,
+                tmpAngle;
         var Fraction angleCos, angleSin, sizeCos, sizeSin;
 
-        do Screen.setColor(true); // black
-        //do Screen.clearScreen();
-
         // cos is x, sin is y
-        do Screen.drawPixel(x, y);
+        // do Screen.drawPixel(x, y);
 
         // Calculate the position of the nose of the ship
         let angleCos = MathExt.cos(angle);
@@ -34,7 +54,7 @@ class Ship {
         do sizeSin.dispose();
 
         // Calculate the position of the port wing
-        let tmpAngle = angle + 130;
+        let tmpAngle = angle + wingAngle;
         let angleCos = MathExt.cos(tmpAngle);
         let angleSin = MathExt.sin(tmpAngle);
         let sizeCos = size.times(angleCos);
@@ -47,7 +67,7 @@ class Ship {
         do sizeSin.dispose();
 
         // Calculate the position of the starboard wing
-        let tmpAngle = angle-130;
+        let tmpAngle = angle - wingAngle;
         let angleCos = MathExt.cos(tmpAngle);
         let angleSin = MathExt.sin(tmpAngle);
         let sizeCos = size.times(angleCos);
@@ -59,11 +79,59 @@ class Ship {
         do sizeCos.dispose();
         do sizeSin.dispose();
 
+        // // If we are thrusting, calculate the flame points
+        // if (thrusting) {
+        //     // Calculate the position of the tip of the thrust flame
+        //     let tmpAngle = angle + 180;
+        //     let angleCos = MathExt.cos(tmpAngle);
+        //     let angleSin = MathExt.sin(tmpAngle);
+        //     let sizeCos = flameDist.times(angleCos);
+        //     let sizeSin = flameDist.times(angleSin);
+        //     let flameTipX = x + Fraction.toInt(sizeCos);
+        //     let flameTipY = y - Fraction.toInt(sizeSin);
+        //     do angleCos.dispose();
+        //     do angleSin.dispose();
+        //     do sizeCos.dispose();
+        //     do sizeSin.dispose();
+
+        //     // Calculate the position of the port corner of the thrust flame
+        //     let tmpAngle = angle + flameAngle;
+        //     let angleCos = MathExt.cos(tmpAngle);
+        //     let angleSin = MathExt.sin(tmpAngle);
+        //     let sizeCos = flameSize.times(angleCos);
+        //     let sizeSin = flameSize.times(angleSin);
+        //     let flamePortX = flameTipX + Fraction.toInt(sizeCos);
+        //     let flamePortY = flameTipY - Fraction.toInt(sizeSin);
+        //     do angleCos.dispose();
+        //     do angleSin.dispose();
+        //     do sizeCos.dispose();
+        //     do sizeSin.dispose();
+
+        //     // Calculate the position of the starboard corner of the thrust flame
+        //     let tmpAngle = angle - flameAngle;
+        //     let angleCos = MathExt.cos(tmpAngle);
+        //     let angleSin = MathExt.sin(tmpAngle);
+        //     let sizeCos = flameSize.times(angleCos);
+        //     let sizeSin = flameSize.times(angleSin);
+        //     let flameStarboardX = flameTipX + Fraction.toInt(sizeCos);
+        //     let flameStarboardY = flameTipY - Fraction.toInt(sizeSin);
+        //     do angleCos.dispose();
+        //     do angleSin.dispose();
+        //     do sizeCos.dispose();
+        //     do sizeSin.dispose();
+        // }
+
         // Draw the ship
-        do Screen.drawLine(x, y, noseX, noseY);
         do Screen.drawLine(noseX, noseY, portX, portY);
         do Screen.drawLine(portX, portY, starboardX, starboardY);
         do Screen.drawLine(starboardX, starboardY, noseX, noseY);
+
+        // // Draw the thrust
+        // if (thrusting) {
+        //     do Screen.drawLine(flameTipX, flameTipY, flamePortX, flamePortY);
+        //     do Screen.drawLine(flamePortX, flamePortY, flameStarboardX, flameStarboardY);
+        //     do Screen.drawLine(flameStarboardX, flameStarboardY, flameTipX, flameTipY);
+        // }
 
         return;
     }
