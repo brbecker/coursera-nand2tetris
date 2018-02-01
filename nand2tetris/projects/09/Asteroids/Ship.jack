@@ -1,9 +1,12 @@
 class Ship {
     field int x, y, angle;
+    field int rotateDirection;
     field boolean thrusting;
     static Fraction size;
-    // static Fraction flameDist, flameSize;
     static int wingAngle;
+    static int rotateSpeed;
+
+    // static Fraction flameDist, flameSize;
     // static int flameAngle;
 
     function void init() {
@@ -11,6 +14,7 @@ class Ship {
 
         let size = Fraction.new(8, 1);
         let wingAngle = 130;
+        let rotateSpeed = 5;
 
         // let flameSize = Fraction.new(3, 1);
         // let tmp = Fraction.new(1, 1);
@@ -32,6 +36,26 @@ class Ship {
     }
 
     method void dispose() {
+        return;
+    }
+
+    method void rotate(int ArotateDirection) {
+        let rotateDirection = ArotateDirection * rotateSpeed;
+        return;
+    }
+
+    method void thrust(boolean Athrusting) {
+        let thrusting = Athrusting;
+        return;
+    }
+
+    method void move() {
+        do hide();
+
+        // Rotate the ship
+        let angle = angle + rotateDirection;
+
+        do show();
         return;
     }
 

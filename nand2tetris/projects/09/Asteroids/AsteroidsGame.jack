@@ -30,31 +30,38 @@ class AsteroidsGame {
             // waits for a key to be pressed.
             while ((key = 0) & (~exit)) {
                 let key = Keyboard.keyPressed();
-                // do bat.move();
+                if (key = 130) { do ship.rotate(1);    } else {     // left
+                if (key = 131) { do ship.thrust(true); } else {     // up
+                if (key = 132) { do ship.rotate(-1);   } else {     // right
+                if (key = 140) { let exit = true; }                 // esc
+                } } }
+                do ship.move();
                 // do moveBall();
-                do Sys.wait(50);
+                do Sys.wait(10);
             }
-
-            // if (key = 130) { do bat.setDirection(1); }
-            // else {
-            //     if (key = 132) { do bat.setDirection(2); }
-            //     else {
-                    if (key = 140) { let exit = true; }
-            //     }
-            // }
 
             // Waits for the key to be released.
             while ((~(key = 0)) & (~exit)) {
                 let key = Keyboard.keyPressed();
-                // do bat.move();
+                do ship.move();
                 // do moveBall();
-                do Sys.wait(50);
+                do Sys.wait(10);
+            }
+
+            // Stop rotation and thrust
+            if (~exit) {
+                do ship.rotate(0);
+                do ship.thrust(false);
             }
         }
 
         if (exit) {
-            do Output.moveCursor(10,27);
-            do Output.printString("Game Over");
+            do Output.moveCursor( 9,26);
+            do Output.printString("           ");
+            do Output.moveCursor(10,26);
+            do Output.printString(" Game Over ");
+            do Output.moveCursor(11,26);
+            do Output.printString("           ");
         }
 
         return;
