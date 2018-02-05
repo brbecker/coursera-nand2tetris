@@ -32,4 +32,8 @@ for jackFile in jackFiles:
 
     while tokenizer.hasMoreTokens():
         tokenizer.advance()
-        tokenizer.tokenType()
+        tokenType = tokenizer.tokenType()
+        if tokenType == JackTokenizer.KEYWORD:
+            tokenVal = tokenizer.keyWord()
+        elif tokenType == JackTokenizer.SYMBOL:
+            tokenVal = tokenizer.symbol()

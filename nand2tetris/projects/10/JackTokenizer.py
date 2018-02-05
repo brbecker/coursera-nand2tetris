@@ -150,6 +150,10 @@ class JackTokenizer:
         """
         assert self.currentToken in JackTokenizer.KEYWORDS, \
             'Current token is not a KEYWORD: ' + self.currentToken
+        if self.tokenizerFile:
+            self.tokenizerFile.write('  <keyword> ' + \
+                                     self.currentToken + \
+                                     ' </keyword>\n')
         return JackTokenizer.KEYWORDS.index(self.currentToken)
 
     def symbol(self):
@@ -160,4 +164,18 @@ class JackTokenizer:
         assert JackTokenizer.P_SYMBOL.fullmatch(self.currentToken) and \
             len(self.currentToken) == 1, \
             'Current token is not a symbol: ' + self.currentToken
+        if self.tokenizerFile:
+            token = self.currentToken
+
+            # Protect <, >, and & tokens from XML
+            if token == '<':
+                token = '&lt;'
+            elif token == '>':
+                token = '&gt;'
+            elif token == '&':
+                token = '&amp;'
+
+            self.tokenizerFile.write('  <symbol> ' + \
+                                     token + \
+                                     ' </symbol>\n')
         return self.currentToken
