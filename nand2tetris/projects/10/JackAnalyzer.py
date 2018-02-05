@@ -1,6 +1,6 @@
 import sys, os, os.path
-# import JackTokenizer
-# import CompilationEngine
+from JackTokenizer import JackTokenizer
+# from CompilationEngine import CompilationEngine
 
 DEBUG = True
 
@@ -20,14 +20,13 @@ else:
         for entry in it:
             if entry.name.endswith('.jack') and entry.is_file():
                 jackFiles.append(os.path.join(arg, entry.name))
-
-
 if DEBUG: print('jackFiles:\t' + str(jackFiles))
-
 
 # Main Loop
 for jackFile in jackFiles:
-    # tokenizer = JackTokenizer(jackFile, DEBUG)
-
+    # Generate the output XML file name
     xmlFile = os.path.basename(jackFile).replace(".jack", "T.xml")
     if DEBUG: print('jackFile: {:<30}xmlFile: {}'.format(jackFile, xmlFile))
+
+    tokenizer = JackTokenizer(jackFile, xmlFile, DEBUG)
+
