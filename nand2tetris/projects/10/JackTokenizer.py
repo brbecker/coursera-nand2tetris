@@ -9,14 +9,22 @@ class JackTokenizer:
     # Token types
     (KEYWORD, SYMBOL, IDENTIFIER, INT_CONST, STRING_CONST) = range(5)
 
+    # Keywords and types
+
+    KEYWORDS = [ 'class', 'method', 'function', 'constructor', 'int',
+                 'boolean', 'char', 'void', 'var',  'static', 'field', 'let',
+                 'do', 'if', 'else', 'while', 'return', 'true', 'false',
+                 'null', 'this' ]
+    (CLASS, METHOD, FUNCTION, CONSTRUCTOR, INT, BOOLEAN, CHAR, VOID, VAR,
+     STATIC, FIELD, LET, DO, IF, ELSE, WHILE, RETURN, TRUE, FALSE, NULL,
+     THIS) = range(len(KEYWORDS))
+
     # Regular expressions (compiled for speed)
     P_BLANK_LINES = re.compile(r'(?m)^\s*$\n')
     P_MULTI_LINE_COMMENT = re.compile(r'(?s)\/\*.*?\*\/')
     P_SINGLE_LINE_COMMENT = re.compile(r'(?m)\s*//.*$')
 
-    R_KEYWORD = r'\b(?:class|constructor|function|method|field|static|var|' + \
-                r'int|char|boolean|void|true|false|null|this|let|do|if|' + \
-                r'else|while|return)\b'
+    R_KEYWORD = r'\b(?:' + '|'.join(KEYWORDS) + r')\b'
     P_KEYWORD = re.compile(R_KEYWORD)
 
     R_SYMBOL = r'[\]\-{}()[.,;+*/&|<>=~]'
@@ -118,3 +126,12 @@ class JackTokenizer:
 
         # Should never get here
         assert False, 'Unrecognized token' + self.currentToken
+
+    def keyWord(self):
+        """
+        Returns the keyword which is the current token.
+        Should be called only when tokenType() is KEYWORD.
+        """
+        assert self.currentToken in JackTokenizer.KEYWORDS,
+            'Current token is not a KEYWORD: ' + self.currentToken
+        return JackTokenizer.KEYWORDS.index(self.currentToken)
