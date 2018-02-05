@@ -2,6 +2,9 @@ import re
 
 class JackTokenizer:
 
+    # Token types
+    (KEYWORD, SYMBOL, IDENTIFIER, INT_CONST, STRING_CONST) = range(5)
+
     # Regular expressions (compiled for speed)
     P_BLANK_LINES = re.compile(r'(?m)^\s*$\n')
     P_MULTI_LINE_COMMENT = re.compile(r'(?s)\/\*.*?\*\/')
@@ -18,7 +21,7 @@ class JackTokenizer:
     R_INTEGER_CONSTANT = r'[1-3]?\d{1,4}'
     P_INTEGER_CONSTANT = re.compile(R_INTEGER_CONSTANT)
 
-    R_STRING_CONSTANT = r'"([^"]*)"'
+    R_STRING_CONSTANT = r'"[^"]*"'
     P_STRING_CONSTANT = re.compile(R_STRING_CONSTANT)
 
     R_IDENTIFIER = r'[A-Za-z_][0-9A-Za-z_]*'
@@ -76,4 +79,24 @@ class JackTokenizer:
 
         # Strip the token and any leading white space from the Jack data
         self._jackData = self._jackData[m.end():].lstrip()
-        if self._DEBUG: print('{:50}Next 10 chars: ^{}^'.format(self.currentToken, self._jackData[:10].replace('\n', '\\n')))
+        # if self._DEBUG: print('{:50}Next 10 chars: ^{}^'.format(self.currentToken, self._jackData[:10].replace('\n', '\\n')))
+
+    def tokenType(self):
+        if JackTokenizer.P_KEYWORD.fullmatch(self.currentToken):
+            if self._DEBUG: print('{} is a KEYWORD'.format(self.currentToken))
+            return JackTokenizer.KEYWORD
+        elif JackTokenizer.P_SYMBOL.fullmatch(self.currentToken):
+            if self._DEBUG: print('{} is a SYMBOL'.format(self.currentToken))
+            return JackTokenizer.SYMBOL
+        elif JackTokenizer.P_IDENTIFIER.fullmatch(self.currentToken):
+            if self._DEBUG: print('{} is an IDENTIFIER'.format(self.currentToken))
+            return JackTokenizer.IDENTIFIER
+        elif JackTokenizer.P_INTEGER_CONSTANT.fullmatch(self.currentToken):
+            if self._DEBUG: print('{} is an INT_CONST'.format(self.currentToken))
+            return JackTokenizer.INT_CONST
+        elif JackTokenizer.P_STRING_CONSTANT.fullmatch(self.currentToken):
+            if self._DEBUG: print('{} is a STRING_CONST'.format(self.currentToken))
+            return JackTokenizer.STRING_CONST
+
+        # Should never get here
+        assert(False)

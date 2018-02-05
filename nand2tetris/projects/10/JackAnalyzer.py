@@ -32,3 +32,4 @@ for jackFile in jackFiles:
 
     while tokenizer.hasMoreTokens():
         tokenizer.advance()
+        tokenizer.tokenType()
