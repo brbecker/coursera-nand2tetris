@@ -36,12 +36,12 @@ class JackTokenizer:
                 r')|(?:' + R_IDENTIFIER + r')'
     P_TOKEN = re.compile(R_TOKEN)
 
-    def __init__(self, jackFile, xmlFile, _DEBUG=False):
+    def __init__(self, jackFile, xmlFile=None, DEBUG=False):
         """
         Opens the input file/stream and gets ready to tokenize it.
         """
         self.xmlFile = xmlFile
-        self._DEBUG = _DEBUG
+        self.DEBUG = DEBUG
 
         # Read the entire file into memory. Dangerous if the file is huge, but
         # unlikely.
@@ -62,8 +62,8 @@ class JackTokenizer:
 
         # Save the comment-free Jack code after stripping any leading white
         # space.
-        self._jackData = s.lstrip()
-        if self._DEBUG: print(s)
+        self.jackData = s.lstrip()
+        if self.DEBUG: print(s)
 
         # Initialize the current token
         currentToken = None
@@ -73,7 +73,7 @@ class JackTokenizer:
         Do we have more tokens in the input?
         """
         # Any non-whitespace character comprises a token.
-        return self._jackData != ''
+        return self.jackData != ''
 
     def advance(self):
         """
@@ -82,7 +82,7 @@ class JackTokenizer:
         Initially there is no current token.
         """
         # Look for a token at the beginning of the Jack data
-        m = JackTokenizer.P_TOKEN.match(self._jackData)
+        m = JackTokenizer.P_TOKEN.match(self.jackData)
 
         # We should always match something at the beginning of the Jack data
         # (or advance should not have been called)
@@ -90,30 +90,30 @@ class JackTokenizer:
         assert m.start() == 0, 'Did not match at the beginning?'
 
         # Set the current token to the portion which matched
-        self.currentToken = self._jackData[:m.end()]
+        self.currentToken = self.jackData[:m.end()]
 
         # Strip the token and any leading white space from the Jack data
-        self._jackData = self._jackData[m.end():].lstrip()
-        # if self._DEBUG: print('{:50}Next 10 chars: ^{}^'.format(self.currentToken, self._jackData[:10].replace('\n', '\\n')))
+        self.jackData = self.jackData[m.end():].lstrip()
+        # if self.DEBUG: print('{:50}Next 10 chars: ^{}^'.format(self.currentToken, self.jackData[:10].replace('\n', '\\n')))
 
     def tokenType(self):
         """
         Returns the type of the current token.
         """
         if JackTokenizer.P_KEYWORD.fullmatch(self.currentToken):
-            if self._DEBUG: print('{} is a KEYWORD'.format(self.currentToken))
+            if self.DEBUG: print('{} is a KEYWORD'.format(self.currentToken))
             return JackTokenizer.KEYWORD
         elif JackTokenizer.P_SYMBOL.fullmatch(self.currentToken):
-            if self._DEBUG: print('{} is a SYMBOL'.format(self.currentToken))
+            if self.DEBUG: print('{} is a SYMBOL'.format(self.currentToken))
             return JackTokenizer.SYMBOL
         elif JackTokenizer.P_IDENTIFIER.fullmatch(self.currentToken):
-            if self._DEBUG: print('{} is an IDENTIFIER'.format(self.currentToken))
+            if self.DEBUG: print('{} is an IDENTIFIER'.format(self.currentToken))
             return JackTokenizer.IDENTIFIER
         elif JackTokenizer.P_INTEGER_CONSTANT.fullmatch(self.currentToken):
-            if self._DEBUG: print('{} is an INT_CONST'.format(self.currentToken))
+            if self.DEBUG: print('{} is an INT_CONST'.format(self.currentToken))
             return JackTokenizer.INT_CONST
         elif JackTokenizer.P_STRING_CONSTANT.fullmatch(self.currentToken):
-            if self._DEBUG: print('{} is a STRING_CONST'.format(self.currentToken))
+            if self.DEBUG: print('{} is a STRING_CONST'.format(self.currentToken))
             return JackTokenizer.STRING_CONST
 
         # Should never get here
