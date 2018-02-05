@@ -39,3 +39,7 @@ for jackFile in jackFiles:
             tokenVal = tokenizer.symbol()
         elif tokenType == JackTokenizer.IDENTIFIER:
             tokenVal = tokenizer.identifier()
+        elif tokenType == JackTokenizer.INT_CONST:
+            tokenVal = tokenizer.intVal()
+        elif tokenType == JackTokenizer.STRING_CONST:
+            tokenVal = tokenizer.stringVal()

@@ -151,9 +151,9 @@ class JackTokenizer:
         assert self.tokenType() == JackTokenizer.KEYWORD, \
             'Current token is not a KEYWORD: ' + self.currentToken
         if self.tokenizerFile:
-            self.tokenizerFile.write('  <keyword> ' + \
+            self.tokenizerFile.write('  <keyword>' + \
                                      self.currentToken + \
-                                     ' </keyword>\n')
+                                     '</keyword>\n')
         return JackTokenizer.KEYWORDS.index(self.currentToken)
 
     def symbol(self):
@@ -162,7 +162,7 @@ class JackTokenizer:
         only when tokenType() is KEYWORD.
         """
         assert self.tokenType() == JackTokenizer.SYMBOL, \
-            'Current token is not a symbol: ' + self.currentToken
+            'Current token is not a SYMBOL: ' + self.currentToken
         if self.tokenizerFile:
             token = self.currentToken
 
@@ -174,9 +174,9 @@ class JackTokenizer:
             elif token == '&':
                 token = '&amp;'
 
-            self.tokenizerFile.write('  <symbol> ' + \
+            self.tokenizerFile.write('  <symbol>' + \
                                      token + \
-                                     ' </symbol>\n')
+                                     '</symbol>\n')
         return self.currentToken
 
     def identifier(self):
@@ -187,8 +187,42 @@ class JackTokenizer:
         assert self.tokenType() == JackTokenizer.IDENTIFIER, \
             'Current token is not an IDENTIFIER: ' + self.currentToken
         if self.tokenizerFile:
-            self.tokenizerFile.write('  <identifier> ' + \
+            self.tokenizerFile.write('  <identifier>' + \
                                      self.currentToken + \
-                                     ' </identifier>\n')
+                                     '</identifier>\n')
         return self.currentToken
 
+    def intVal(self):
+        """
+        Returns the integer value of the current token.
+        Should be called only when tokenType() is INT_CONST.
+        """
+        assert self.tokenType() == JackTokenizer.INT_CONST, \
+            'Current token is not an INT_CONST: ' + self.currentToken
+
+        intVal = int(self.currentToken)
+        assert intVal >= 0 and intVal <= 32767, \
+            'INT_CONST value out of range [0, 32767]: ' + self.currentToken
+
+        if self.tokenizerFile:
+            self.tokenizerFile.write('  <integerConstant>' + \
+                                     self.currentToken + \
+                                     '</integerConstant>\n')
+        return intVal
+
+    def stringVal(self):
+        """
+        Returns the string value of the current token, without the double
+        quotes. Should be called only when tokenType() is STRING_CONST.
+        """
+        assert self.tokenType() == JackTokenizer.STRING_CONST, \
+            'Current token is not a STRING_CONST: ' + self.currentToken
+
+        # Strip the double quotes
+        strVal = self.currentToken[1:-1]
+
+        if self.tokenizerFile:
+            self.tokenizerFile.write('  <stringConstant>' + \
+                                     strVal + \
+                                     '</stringConstant>\n')
+        return strVal
