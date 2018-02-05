@@ -37,3 +37,5 @@ for jackFile in jackFiles:
             tokenVal = tokenizer.keyWord()
         elif tokenType == JackTokenizer.SYMBOL:
             tokenVal = tokenizer.symbol()
+        elif tokenType == JackTokenizer.IDENTIFIER:
+            tokenVal = tokenizer.identifier()

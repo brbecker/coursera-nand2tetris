@@ -148,7 +148,7 @@ class JackTokenizer:
         Returns the keyword which is the current token.
         Should be called only when tokenType() is KEYWORD.
         """
-        assert self.currentToken in JackTokenizer.KEYWORDS, \
+        assert self.tokenType() == JackTokenizer.KEYWORD, \
             'Current token is not a KEYWORD: ' + self.currentToken
         if self.tokenizerFile:
             self.tokenizerFile.write('  <keyword> ' + \
@@ -161,8 +161,7 @@ class JackTokenizer:
         Returns the character which is the current token. Should be called
         only when tokenType() is KEYWORD.
         """
-        assert JackTokenizer.P_SYMBOL.fullmatch(self.currentToken) and \
-            len(self.currentToken) == 1, \
+        assert self.tokenType() == JackTokenizer.SYMBOL, \
             'Current token is not a symbol: ' + self.currentToken
         if self.tokenizerFile:
             token = self.currentToken
@@ -179,3 +178,17 @@ class JackTokenizer:
                                      token + \
                                      ' </symbol>\n')
         return self.currentToken
+
+    def identifier(self):
+        """
+        Returns the identifier which is the current token.
+        Should be called only when tokenType() is IDENTIFIER.
+        """
+        assert self.tokenType() == JackTokenizer.IDENTIFIER, \
+            'Current token is not an IDENTIFIER: ' + self.currentToken
+        if self.tokenizerFile:
+            self.tokenizerFile.write('  <identifier> ' + \
+                                     self.currentToken + \
+                                     ' </identifier>\n')
+        return self.currentToken
+
