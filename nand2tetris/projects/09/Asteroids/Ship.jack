@@ -2,9 +2,12 @@ class Ship {
     field int x, y, angle;
     field int rotateDirection;
     field boolean thrusting;
+    field Array velocity;
+
     static Fraction size;
     static int wingAngle;
     static int rotateSpeed;
+    static Fraction acceleration;
 
     // static Fraction flameDist, flameSize;
     // static int flameAngle;
@@ -15,6 +18,7 @@ class Ship {
         let size = Fraction.new(8, 1);
         let wingAngle = 130;
         let rotateSpeed = 5;
+        let acceleration = Fraction.new(1, 4);
 
         // let flameSize = Fraction.new(3, 1);
         // let tmp = Fraction.new(1, 1);
@@ -26,16 +30,29 @@ class Ship {
         return;
     }
 
-    constructor Ship new(int initX, int initY, int initAngle) {
-        let x = initX;
-        let y = initY;
-        let angle = initAngle;
-        let thrusting = true;
+    constructor Ship new(int Ax, int Ay, int Aangle) {
+        let x = Ax;
+        let y = Ay;
+        let angle = Aangle;
+        let thrusting = false;
+        let velocity = Array.new(2);
+
+        let velocity[0] = Fraction.new(0, 1);
+        let velocity[1] = Fraction.new(0, 1);
 
         return this;
     }
 
     method void dispose() {
+        var Fraction v1, v2;
+
+        let v1 = velocity[0];
+        let v2 = velocity[1];
+
+        do v1.dispose();
+        do v2.dispose();
+        do velocity.dispose();
+
         return;
     }
 
@@ -50,10 +67,36 @@ class Ship {
     }
 
     method void move() {
+        var Fraction dX, dY, sdX, sdY, tmpX, tmpY;
+
         do hide();
 
         // Rotate the ship
         let angle = angle + rotateDirection;
+
+        // Update velocity vector if thrusting
+        if (thrusting) {
+            let dX = MathExt.cos(angle);
+            let dY = MathExt.sin(angle);
+            let sdX = dX.times(acceleration);
+            let sdY = dY.times(acceleration);
+            let tmpX = velocity[0];
+            let tmpY = velocity[1];
+            let velocity[0] = tmpX.plus(sdX);
+            let velocity[1] = tmpY.plus(sdY);
+            do dX.dispose();
+            do dY.dispose();
+            do sdX.dispose();
+            do sdY.dispose();
+            do tmpX.dispose();
+            do tmpY.dispose();
+        }
+
+        let tmpX = velocity[0];
+        let tmpY = velocity[1];
+
+        let x = x + tmpX.toInt();
+        let y = y + tmpY.toInt();
 
         do show();
         return;
