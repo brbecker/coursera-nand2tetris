@@ -71,8 +71,8 @@ class JackTokenizer:
 
         # We should always match something at the beginning of the Jack data
         # (or advance should not have been called)
-        assert(m)
-        assert(m.start() == 0)
+        assert m, 'Did not match?'
+        assert m.start() == 0, 'Did not match at the beginning?'
 
         # Set the current token to the portion which matched
         self.currentToken = self._jackData[:m.end()]
@@ -99,4 +99,4 @@ class JackTokenizer:
             return JackTokenizer.STRING_CONST
 
         # Should never get here
-        assert(False)
+        assert False, 'Unrecognized token' + self.currentToken
