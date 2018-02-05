@@ -135,3 +135,13 @@ class JackTokenizer:
         assert self.currentToken in JackTokenizer.KEYWORDS,
             'Current token is not a KEYWORD: ' + self.currentToken
         return JackTokenizer.KEYWORDS.index(self.currentToken)
+
+    def symbol(self):
+        """
+        Returns the character which is the current token. Should be called
+        only when tokenType() is KEYWORD.
+        """
+        assert JackTokenizer.P_SYMBOL.fullmatch(self.currentToken) and
+            len(self.currentToken) == 1,
+            'Current token is not a symbol: ' + self.currentToken
+        return self.currentToken
