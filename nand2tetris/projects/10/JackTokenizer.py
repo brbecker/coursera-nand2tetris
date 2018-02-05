@@ -44,11 +44,10 @@ class JackTokenizer:
                 r')|(?:' + R_IDENTIFIER + r')'
     P_TOKEN = re.compile(R_TOKEN)
 
-    def __init__(self, jackFile, xmlFile=None, DEBUG=False):
+    def __init__(self, jackFile, tokenizerFile=None, DEBUG=False):
         """
         Opens the input file/stream and gets ready to tokenize it.
         """
-        self.xmlFile = xmlFile
         self.DEBUG = DEBUG
 
         # Read the entire file into memory. Dangerous if the file is huge, but
@@ -76,12 +75,29 @@ class JackTokenizer:
         # Initialize the current token
         currentToken = None
 
+        # Open and initializae the tokenizer file, if specified
+        self.tokenizerFile = None
+        if tokenizerFile:
+            self.tokenizerFile = open(tokenizerFile, mode='w')
+            self.tokenizerFile.write('<tokens>\n')
+
     def hasMoreTokens(self):
         """
         Do we have more tokens in the input?
         """
         # Any non-whitespace character comprises a token.
-        return self.jackData != ''
+        if self.jackData != '':
+            return True
+
+        # If there are no more tokens and we are logging the tokenizer output,
+        # finish it off.
+        if self.tokenizerFile:
+            self.tokenizerFile.write('</tokens>\n')
+            self.tokenizerFile.close()
+            self.tokenizerFile = None
+
+        return False
+
 
     def advance(self):
         """
