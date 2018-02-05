@@ -148,7 +148,7 @@ class JackTokenizer:
         Returns the keyword which is the current token.
         Should be called only when tokenType() is KEYWORD.
         """
-        assert self.currentToken in JackTokenizer.KEYWORDS,
+        assert self.currentToken in JackTokenizer.KEYWORDS, \
             'Current token is not a KEYWORD: ' + self.currentToken
         return JackTokenizer.KEYWORDS.index(self.currentToken)
 
@@ -157,7 +157,7 @@ class JackTokenizer:
         Returns the character which is the current token. Should be called
         only when tokenType() is KEYWORD.
         """
-        assert JackTokenizer.P_SYMBOL.fullmatch(self.currentToken) and
-            len(self.currentToken) == 1,
+        assert JackTokenizer.P_SYMBOL.fullmatch(self.currentToken) and \
+            len(self.currentToken) == 1, \
             'Current token is not a symbol: ' + self.currentToken
         return self.currentToken
