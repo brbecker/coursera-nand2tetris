@@ -1,6 +1,10 @@
 import re
 
 class JackTokenizer:
+    """
+    Removes all comments and white space from the input stream and breaks it
+    into Jack-language tokens, as specified in the Jack grammar.
+    """
 
     # Token types
     (KEYWORD, SYMBOL, IDENTIFIER, INT_CONST, STRING_CONST) = range(5)
@@ -33,6 +37,9 @@ class JackTokenizer:
     P_TOKEN = re.compile(R_TOKEN)
 
     def __init__(self, jackFile, xmlFile, _DEBUG=False):
+        """
+        Opens the input file/stream and gets ready to tokenize it.
+        """
         self.xmlFile = xmlFile
         self._DEBUG = _DEBUG
 
@@ -62,10 +69,18 @@ class JackTokenizer:
         currentToken = None
 
     def hasMoreTokens(self):
+        """
+        Do we have more tokens in the input?
+        """
         # Any non-whitespace character comprises a token.
         return self._jackData != ''
 
     def advance(self):
+        """
+        Gets the next token from the input and makes it the current token.
+        This method should only be called if hasMoreTokens() is True.
+        Initially there is no current token.
+        """
         # Look for a token at the beginning of the Jack data
         m = JackTokenizer.P_TOKEN.match(self._jackData)
 
@@ -82,6 +97,9 @@ class JackTokenizer:
         # if self._DEBUG: print('{:50}Next 10 chars: ^{}^'.format(self.currentToken, self._jackData[:10].replace('\n', '\\n')))
 
     def tokenType(self):
+        """
+        Returns the type of the current token.
+        """
         if JackTokenizer.P_KEYWORD.fullmatch(self.currentToken):
             if self._DEBUG: print('{} is a KEYWORD'.format(self.currentToken))
             return JackTokenizer.KEYWORD
