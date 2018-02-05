@@ -30,3 +30,4 @@ for jackFile in jackFiles:
 
     tokenizer = JackTokenizer(jackFile, xmlFile, DEBUG)
 
+    print(tokenizer.hasMoreTokens())

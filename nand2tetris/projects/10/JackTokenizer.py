@@ -31,3 +31,7 @@ class JackTokenizer:
         # Save the comment-free Jack code
         self._jackData = c
         if _DEBUG: print(c)
+
+    def hasMoreTokens(self):
+        # Any non-whitespace character comprises a token.
+        return re.search('\S', self._jackData)
