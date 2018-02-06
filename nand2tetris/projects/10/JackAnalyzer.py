@@ -1,6 +1,5 @@
 import sys, os, os.path
-from JackTokenizer import JackTokenizer
-# from CompilationEngine import CompilationEngine
+from CompilationEngine import CompilationEngine
 
 DEBUG = True
 
@@ -25,21 +24,24 @@ if DEBUG: print('jackFiles:\t' + str(jackFiles))
 # Main Loop
 for jackFile in jackFiles:
     # Generate the output XML file name
-    xmlFile = jackFile.replace(".jack", ".Txml")
+    xmlFile = jackFile.replace(".jack", ".xml")
     if DEBUG: print('jackFile: {:<30}xmlFile: {}'.format(jackFile, xmlFile))
 
-    tokenizer = JackTokenizer(jackFile, xmlFile)#, DEBUG)
+    compEngine = CompilationEngine(jackFile, xmlFile, DEBUG)
+    compEngine.compileClass()
 
-    while tokenizer.hasMoreTokens():
-        tokenizer.advance()
-        tokenType = tokenizer.tokenType()
-        if tokenType == JackTokenizer.KEYWORD:
-            tokenVal = tokenizer.keyWord()
-        elif tokenType == JackTokenizer.SYMBOL:
-            tokenVal = tokenizer.symbol()
-        elif tokenType == JackTokenizer.IDENTIFIER:
-            tokenVal = tokenizer.identifier()
-        elif tokenType == JackTokenizer.INT_CONST:
-            tokenVal = tokenizer.intVal()
-        elif tokenType == JackTokenizer.STRING_CONST:
-            tokenVal = tokenizer.stringVal()
+    # tokenizer = JackTokenizer(jackFile)#, xmlFile, DEBUG)
+
+    # while tokenizer.hasMoreTokens():
+    #     tokenizer.advance()
+    #     tokenType = tokenizer.tokenType()
+    #     if tokenType == JackTokenizer.KEYWORD:
+    #         tokenVal = tokenizer.keyWord()
+    #     elif tokenType == JackTokenizer.SYMBOL:
+    #         tokenVal = tokenizer.symbol()
+    #     elif tokenType == JackTokenizer.IDENTIFIER:
+    #         tokenVal = tokenizer.identifier()
+    #     elif tokenType == JackTokenizer.INT_CONST:
+    #         tokenVal = tokenizer.intVal()
+    #     elif tokenType == JackTokenizer.STRING_CONST:
+    #         tokenVal = tokenizer.stringVal()
