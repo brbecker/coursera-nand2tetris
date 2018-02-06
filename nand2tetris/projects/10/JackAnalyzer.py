@@ -25,10 +25,10 @@ if DEBUG: print('jackFiles:\t' + str(jackFiles))
 # Main Loop
 for jackFile in jackFiles:
     # Generate the output XML file name
-    xmlFile = os.path.basename(jackFile).replace(".jack", "T.xml")
+    xmlFile = jackFile.replace(".jack", ".Txml")
     if DEBUG: print('jackFile: {:<30}xmlFile: {}'.format(jackFile, xmlFile))
 
-    tokenizer = JackTokenizer(jackFile, xmlFile, DEBUG)
+    tokenizer = JackTokenizer(jackFile, xmlFile)#, DEBUG)
 
     while tokenizer.hasMoreTokens():
         tokenizer.advance()

@@ -3,3 +3,4 @@ nand2tetris/tools/bin/*.dat
 nand2tetris/projects/0[78]/**/*.asm
 nand2tetris/projects/**/*.out
 nand2tetris/projects/10/*.xml
+nand2tetris/projects/10/*/*.Txml
