@@ -37,7 +37,7 @@ class CompilationEngine:
 
         # Expect KEYWORD 'class'
         if t.tokenType() == JackTokenizer.KEYWORD and t.keyWord() == 'class':
-            self.emit('<class>', 1)
+            self.emit('<class>')
             self.emit('<keyword>class</keyword>')
             t.advance()
         else:
@@ -161,15 +161,19 @@ class CompilationEngine:
         """
         pass
 
-    def emit(self, xml, deltaIndent=0):
+    def emit(self, xml):
         """
         Emit the provided XML data as a line to the xmlFile. Will indent based
-        on the current indentLevel. deltaIndent is used to change the
-        indentLevel for subsequent output (should be -1, 0, or 1).
+        on the current indentLevel.
         """
+        # If the XML starts with '</', reduce the indent level
+        if xml[:2] == '</':
+            self.indentLevel = self.indentLevel - 1
+
         # Output the XML, indented to the current level
         self.xmlFile.write('{}{}\n'.format(self.INDENT * self.indentLevel,
                                            xml))
 
-        # Update the indent level
-        self.indentLevel = self.indentLevel + deltaIndent
+        # If the XML does not contain '</', increase the indent level
+        if '</' not in xml:
+            self.indentLevel = self.indentLevel + 1
