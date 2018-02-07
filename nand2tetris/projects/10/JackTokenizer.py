@@ -9,15 +9,11 @@ class JackTokenizer:
     # Token types
     (KEYWORD, SYMBOL, IDENTIFIER, INT_CONST, STRING_CONST) = range(5)
 
-    # Keywords and types
-
+    # Keywords
     KEYWORDS = [ 'class', 'method', 'function', 'constructor', 'int',
                  'boolean', 'char', 'void', 'var',  'static', 'field', 'let',
                  'do', 'if', 'else', 'while', 'return', 'true', 'false',
                  'null', 'this' ]
-    (CLASS, METHOD, FUNCTION, CONSTRUCTOR, INT, BOOLEAN, CHAR, VOID, VAR,
-     STATIC, FIELD, LET, DO, IF, ELSE, WHILE, RETURN, TRUE, FALSE, NULL,
-     THIS) = range(len(KEYWORDS))
 
     # Regular expressions (compiled for speed)
     P_BLANK_LINES = re.compile(r'(?m)^\s*$\n')
@@ -73,7 +69,7 @@ class JackTokenizer:
         if self.DEBUG: print(s)
 
         # Initialize the current token
-        currentToken = None
+        self.currentToken = None
 
         # Open and initializae the tokenizer file, if specified
         self.tokenizerFile = None
@@ -97,7 +93,6 @@ class JackTokenizer:
             self.tokenizerFile = None
 
         return False
-
 
     def advance(self):
         """
@@ -154,30 +149,30 @@ class JackTokenizer:
             self.tokenizerFile.write('  <keyword>' + \
                                      self.currentToken + \
                                      '</keyword>\n')
-        return JackTokenizer.KEYWORDS.index(self.currentToken)
+        return self.currentToken
 
     def symbol(self):
         """
         Returns the character which is the current token. Should be called
         only when tokenType() is KEYWORD.
         """
+        token = self.currentToken
         assert self.tokenType() == JackTokenizer.SYMBOL, \
-            'Current token is not a SYMBOL: ' + self.currentToken
+            'Current token is not a SYMBOL: ' + token
+
+        # Protect <, >, and & tokens from XML
+        if token == '<':
+            token = '&lt;'
+        elif token == '>':
+            token = '&gt;'
+        elif token == '&':
+            token = '&amp;'
+
         if self.tokenizerFile:
-            token = self.currentToken
-
-            # Protect <, >, and & tokens from XML
-            if token == '<':
-                token = '&lt;'
-            elif token == '>':
-                token = '&gt;'
-            elif token == '&':
-                token = '&amp;'
-
             self.tokenizerFile.write('  <symbol>' + \
                                      token + \
                                      '</symbol>\n')
-        return self.currentToken
+        return token
 
     def identifier(self):
         """
