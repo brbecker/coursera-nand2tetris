@@ -6,6 +6,8 @@ class CompilationEngine:
     and emits its parsed structure into an output file/stream.
     """
 
+    INDENT = "  "
+
     def __init__(self, jackFile, xmlFile, DEBUG=False):
         """
         Creates a new compilation engine with the given input and output. The
@@ -15,11 +17,62 @@ class CompilationEngine:
         self.xmlFile = open(xmlFile, mode='w')
         self.DEBUG = DEBUG
 
+        # Indentation level
+        self.indentLevel = 0
+
     def compileClass(self):
         """
         Compiles a complete class.
         """
-        pass
+        # Alias self.tokenizer to make code more compact
+        t = self.tokenizer
+
+        # Verify that there is a token to read and advance to it
+        if t.hasMoreTokens():
+            # Advance to the next token
+            t.advance()
+        else:
+            # If not, we're done.
+            return
+
+        # Expect KEYWORD 'class'
+        if t.tokenType() == JackTokenizer.KEYWORD and t.keyWord() == 'class':
+            self.emit('<class>', 1)
+            self.emit('<keyword>class</keyword>')
+            t.advance()
+        else:
+            raise SyntaxError('Expected KEYWORD class. Found ' + t.currentToken)
+
+        # Expect IDENTIFIER and advance if found
+        if t.tokenType() == JackTokenizer.IDENTIFIER:
+            self.emit('<identifier>' + t.identifier() + '</identifier>')
+            t.advance()
+        else:
+            raise SyntaxError('Expected IDENTIFIER. Found ' + t.currentToken)
+
+        # Expect SYMBOL '{'
+        if t.tokenType() == JackTokenizer.SYMBOL and t.symbol() == '{':
+            self.emit('<symbol>' + t.symbol() + '</symbol>')
+            t.advance()
+        else:
+            raise SyntaxError('Expected SYMBOL {. Found ' + t.currentToken)
+
+        # Expect zero or more classVarDecs
+        while t.tokenType() == JackTokenizer.KEYWORD and \
+            t.keyWord() in [ 'static', 'field' ]:
+            self.compileClassVarDec()
+
+        # Expect zero or more subroutineDecs
+        while t.tokenType() == JackTokenizer.KEYWORD and \
+            t.keyWord() in [ 'constructor', 'function', 'method' ]:
+            self.compileSubroutine()
+
+        # Expect SYMBOL '}'
+        if t.tokenType() == JackTokenizer.SYMBOL and t.symbol() == '}':
+            self.emit('<symbol>' + t.symbol() + '</symbol>')
+            t.advance()
+        else:
+            raise SyntaxError('Expected SYMBOL }. Found ' + t.currentToken)
 
     def compileClassVarDec(self):
         """
@@ -107,3 +160,16 @@ class CompilationEngine:
         Compiles a (possibly empty) comma-separated list of expressions.
         """
         pass
+
+    def emit(self, xml, deltaIndent=0):
+        """
+        Emit the provided XML data as a line to the xmlFile. Will indent based
+        on the current indentLevel. deltaIndent is used to change the
+        indentLevel for subsequent output (should be -1, 0, or 1).
+        """
+        # Output the XML, indented to the current level
+        self.xmlFile.write('{}{}\n'.format(self.INDENT * self.indentLevel,
+                                           xml))
+
+        # Update the indent level
+        self.indentLevel = self.indentLevel + deltaIndent
