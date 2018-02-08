@@ -24,6 +24,9 @@ class CompilationEngine:
         """
         Compiles a complete class.
         """
+        # Emit the class tag
+        self.emit('<class>')
+
         # Alias self.tokenizer to make code more compact
         t = self.tokenizer
 
@@ -36,43 +39,29 @@ class CompilationEngine:
             return
 
         # Expect KEYWORD 'class'
-        if t.tokenType() == JackTokenizer.KEYWORD and t.keyWord() == 'class':
-            self.emit('<class>')
-            self.emit('<keyword>class</keyword>')
-            t.advance()
-        else:
-            raise SyntaxError('Expected KEYWORD class. Found ' + t.currentToken)
+        self.eat('keyword', 'class')
 
         # Expect IDENTIFIER and advance if found
-        if t.tokenType() == JackTokenizer.IDENTIFIER:
-            self.emit('<identifier>' + t.identifier() + '</identifier>')
-            t.advance()
-        else:
-            raise SyntaxError('Expected IDENTIFIER. Found ' + t.currentToken)
+        self.eat('identifier')
 
         # Expect SYMBOL '{'
-        if t.tokenType() == JackTokenizer.SYMBOL and t.symbol() == '{':
-            self.emit('<symbol>' + t.symbol() + '</symbol>')
-            t.advance()
-        else:
-            raise SyntaxError('Expected SYMBOL {. Found ' + t.currentToken)
+        self.eat('symbol', '{')
 
         # Expect zero or more classVarDecs
-        while t.tokenType() == JackTokenizer.KEYWORD and \
+        while t.tokenType() == 'keyword' and \
             t.keyWord() in [ 'static', 'field' ]:
             self.compileClassVarDec()
 
         # Expect zero or more subroutineDecs
-        while t.tokenType() == JackTokenizer.KEYWORD and \
+        while t.tokenType() == 'keyword' and \
             t.keyWord() in [ 'constructor', 'function', 'method' ]:
             self.compileSubroutine()
 
         # Expect SYMBOL '}'
-        if t.tokenType() == JackTokenizer.SYMBOL and t.symbol() == '}':
-            self.emit('<symbol>' + t.symbol() + '</symbol>')
-            t.advance()
-        else:
-            raise SyntaxError('Expected SYMBOL }. Found ' + t.currentToken)
+        self.eat('symbol', '}')
+
+        # Emit the end class tag
+        self.emit('</class>')
 
     def compileClassVarDec(self):
         """
@@ -160,6 +149,38 @@ class CompilationEngine:
         Compiles a (possibly empty) comma-separated list of expressions.
         """
         pass
+
+    def eat(self, tokenType, tokenVals=[]):
+        """
+        Consume the current token if it matches the expected type and value.
+        """
+        # Get the type and value of the current token
+        t = self.tokenizer
+        tType = t.tokenType()
+        if tType == 'keyword':
+            tVal = t.keyWord()
+        elif tType == 'symbol':
+            tVal = t.symbol()
+        elif tType == 'identifier':
+            tVal = t.identifier()
+        elif tType == 'integerConstant':
+            tVal = t.intVal()
+        else: # tType == 'stringConstant'
+            tVal = t.stringVal()
+
+        # If tokenVals is not a list, make it one
+        if type(tokenVals) != type([]):
+            tokenVals = [tokenVals]
+
+        # Verify that the type matches and the value is one of the values
+        # expected.
+        if tType == tokenType and (not tokenVals or tVal in tokenVals):
+            self.emit('<{0}>{1}</{0}>'.format(tType, tVal))
+            t.advance()
+        else:
+            raise SyntaxError('Expected {} {}. Found {}.'.format(tokenType,
+                                                                 ' or '.join(tokenVals),
+                                                                 t.currentToken))
 
     def emit(self, xml):
         """
