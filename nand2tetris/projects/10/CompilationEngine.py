@@ -69,7 +69,7 @@ class CompilationEngine:
         Should only be called if keyword static or keyword field is the current
         token.
         """
-        # Emit header
+        # Emit opening tag
         self.emit('<classVarDec>')
 
         # Eat either a 'static' or 'field' keyword
@@ -103,8 +103,55 @@ class CompilationEngine:
     def compileSubroutine(self):
         """
         Compiles a complete method, function, or constructor.
+        Should only be called if the current token is one of 'constructor',
+        'function', or 'method'.
         """
-        pass
+        # Emit opening tag
+        self.emit('<subroutineDec>')
+
+        # Eat keyword 'constructor', 'function', or 'method'.
+        self.eat('keyword', [ 'constructor', 'function', 'method' ])
+
+        # Expect 'void' or a type: one of the keywords 'int', 'char', or
+        # 'boolean', or a className (identifier).
+        t = self.tokenizer
+        tType = t.tokenType()
+        if tType == 'keyword':
+            self.eat('keyword', [ 'void', 'int', 'char', 'boolean' ])
+        else:
+            self.eat('identifier')
+
+        # Expect an identifier.
+        self.eat('identifier')
+
+        # Expect symbol '('.
+        self.eat('symbol', '(')
+
+        # Expect a parameter list
+        self.compileParameterList()
+
+        # Expect symbol ')'.
+        self.eat('symbol', ')')
+
+        # Emit opening tag for subroutine body
+        self.emit('<subroutineBody>')
+
+        # Expect symbol '{'.
+        self.eat('symbol', '{')
+
+        # Expect varDec*
+        while t.tokenType() == 'keyword' and t.keyWord() == 'var':
+            self.compileVarDec()
+
+        # Expect statements
+        self.compileStatements()
+
+        # Expect symbol '}'.
+        self.eat('symbol', '}')
+
+        # Emit closing tags
+        self.emit('</subroutineBody>')
+        self.emit('</subroutineDec>')
 
     def compileParameterList(self):
         """
