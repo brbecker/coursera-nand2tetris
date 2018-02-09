@@ -66,8 +66,39 @@ class CompilationEngine:
     def compileClassVarDec(self):
         """
         Compiles a static declaration or a field declaration.
+        Should only be called if keyword static or keyword field is the current
+        token.
         """
-        pass
+        # Emit header
+        self.emit('<classVarDec>')
+
+        # Eat either a 'static' or 'field' keyword
+        self.eat('keyword', [ 'static', 'field' ])
+
+        # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
+        # className (identifier).
+        t = self.tokenizer
+        tType = t.tokenType()
+        if tType == 'keyword':
+            self.eat('keyword', [ 'int', 'char', 'boolean' ])
+        else:
+            self.eat('identifier')
+
+        # Expect an identifier.
+        self.eat('identifier')
+
+        # Expect an optional list of identifiers.
+        while t.tokenType() == 'symbol' and t.symbol() == ',':
+            t.advance()
+
+            # Expect an identifier
+            self.eat('identifier')
+
+        # Expect symbol ';'
+        self.eat('symbol', ';')
+
+        # Emit closing tag
+        self.emit('</classVarDec>')
 
     def compileSubroutine(self):
         """
