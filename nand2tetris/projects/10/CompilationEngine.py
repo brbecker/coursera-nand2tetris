@@ -456,6 +456,9 @@ class CompilationEngine:
             if t.tokenType() == 'symbol' and t.symbol() == ',':
                 self.eat('symbol', [','])
 
+            # Update the tType
+            tType = t.tokenType()
+
         # Emit closing tag
         self.emit('</expressionList>')
 
