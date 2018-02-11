@@ -399,7 +399,24 @@ class CompilationEngine:
         """
         Compiles a (possibly empty) comma-separated list of expressions.
         """
-        pass
+        # Emit opening tag'
+        self.emit('<expressionList>')
+
+        # Get the initial token type
+        t = self.tokenizer
+        tType = t.tokenType()
+
+        # Closing parenthesis ends the list
+        while not (tType == 'symbol' and t.symbol() == ')'):
+            # Expect an expression
+            self.compileExpression()
+
+            # Expect an optional ','
+            if t.tokenType() == 'symbol' and t.symbol() == ',':
+                self.eat('symbol', [','])
+
+        # Emit closing tag
+        self.emit('</expressionList>')
 
     def eat(self, tokenType, tokenVals=None):
         """
