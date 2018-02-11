@@ -183,10 +183,6 @@
                 <term>
                   <identifier> i </identifier>
                 </term>
-                <symbol> | </symbol>
-                <term>
-                  <identifier> j </identifier>
-                </term>
               </expression>
               <symbol> ; </symbol>
             </letStatement>
