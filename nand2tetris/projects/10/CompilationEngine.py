@@ -1,5 +1,6 @@
 from JackTokenizer import JackTokenizer
 
+
 class CompilationEngine:
     """
     Effects the actual compilation output. Gets its input from a JackTokenizer
@@ -13,7 +14,7 @@ class CompilationEngine:
         Creates a new compilation engine with the given input and output. The
         next routine called must be compileClass().
         """
-        self.tokenizer = JackTokenizer(jackFile)#, DEBUG=DEBUG)
+        self.tokenizer = JackTokenizer(jackFile)  # , DEBUG=DEBUG)
         self.xmlFile = open(xmlFile, mode='w')
         self.DEBUG = DEBUG
 
@@ -39,26 +40,26 @@ class CompilationEngine:
             return
 
         # Expect KEYWORD 'class'
-        self.eat('keyword', 'class')
+        self.eat('keyword', ['class'])
 
         # Expect IDENTIFIER and advance if found
         self.eat('identifier')
 
         # Expect SYMBOL '{'
-        self.eat('symbol', '{')
+        self.eat('symbol', ['{'])
 
         # Expect zero or more classVarDecs
         while t.tokenType() == 'keyword' and \
-            t.keyWord() in [ 'static', 'field' ]:
+                t.keyWord() in ['static', 'field']:
             self.compileClassVarDec()
 
         # Expect zero or more subroutineDecs
         while t.tokenType() == 'keyword' and \
-            t.keyWord() in [ 'constructor', 'function', 'method' ]:
+                t.keyWord() in ['constructor', 'function', 'method']:
             self.compileSubroutine()
 
         # Expect SYMBOL '}'
-        self.eat('symbol', '}')
+        self.eat('symbol', ['}'])
 
         # Emit the end class tag
         self.emit('</class>')
@@ -73,14 +74,14 @@ class CompilationEngine:
         self.emit('<classVarDec>')
 
         # Eat either a 'static' or 'field' keyword
-        self.eat('keyword', [ 'static', 'field' ])
+        self.eat('keyword', ['static', 'field'])
 
         # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
         # className (identifier).
         t = self.tokenizer
         tType = t.tokenType()
         if tType == 'keyword':
-            self.eat('keyword', [ 'int', 'char', 'boolean' ])
+            self.eat('keyword', ['int', 'char', 'boolean'])
         else:
             self.eat('identifier')
 
@@ -89,13 +90,13 @@ class CompilationEngine:
 
         # Expect an optional list of identifiers.
         while t.tokenType() == 'symbol' and t.symbol() == ',':
-            self.eat('symbol', ',')
+            self.eat('symbol', [','])
 
             # Expect an identifier
             self.eat('identifier')
 
         # Expect symbol ';'
-        self.eat('symbol', ';')
+        self.eat('symbol', [';'])
 
         # Emit closing tag
         self.emit('</classVarDec>')
@@ -110,14 +111,14 @@ class CompilationEngine:
         self.emit('<subroutineDec>')
 
         # Eat keyword 'constructor', 'function', or 'method'.
-        self.eat('keyword', [ 'constructor', 'function', 'method' ])
+        self.eat('keyword', ['constructor', 'function', 'method'])
 
         # Expect 'void' or a type: one of the keywords 'int', 'char', or
         # 'boolean', or a className (identifier).
         t = self.tokenizer
         tType = t.tokenType()
         if tType == 'keyword':
-            self.eat('keyword', [ 'void', 'int', 'char', 'boolean' ])
+            self.eat('keyword', ['void', 'int', 'char', 'boolean'])
         else:
             self.eat('identifier')
 
@@ -125,19 +126,19 @@ class CompilationEngine:
         self.eat('identifier')
 
         # Expect symbol '('.
-        self.eat('symbol', '(')
+        self.eat('symbol', ['('])
 
         # Expect a parameter list
         self.compileParameterList()
 
         # Expect symbol ')'.
-        self.eat('symbol', ')')
+        self.eat('symbol', [')'])
 
         # Emit opening tag for subroutine body
         self.emit('<subroutineBody>')
 
         # Expect symbol '{'.
-        self.eat('symbol', '{')
+        self.eat('symbol', ['{'])
 
         # Expect varDec*
         while t.tokenType() == 'keyword' and t.keyWord() == 'var':
@@ -147,7 +148,7 @@ class CompilationEngine:
         self.compileStatements()
 
         # Expect symbol '}'.
-        self.eat('symbol', '}')
+        self.eat('symbol', ['}'])
 
         # Emit closing tags
         self.emit('</subroutineBody>')
@@ -170,9 +171,9 @@ class CompilationEngine:
         # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
         # className (identifier).
         finished = False
-        while not finished and tType in [ 'keyword', 'identifier' ]:
+        while not finished and tType in ['keyword', 'identifier']:
             if tType == 'keyword':
-                self.eat('keyword', [ 'int', 'char', 'boolean' ])
+                self.eat('keyword', ['int', 'char', 'boolean'])
             else:
                 self.eat('identifier')
 
@@ -182,7 +183,7 @@ class CompilationEngine:
             # Look for a ',' symbol
             if t.tokenType() == 'symbol' and t.symbol() == ',':
                 # If found, eat it
-                self.eat('symbol', ',')
+                self.eat('symbol', [','])
 
                 # Get the next token type
                 tType = t.tokenType()
@@ -201,14 +202,14 @@ class CompilationEngine:
         self.emit('<varDec>')
 
         # Eat a 'var' keyword
-        self.eat('keyword', 'var')
+        self.eat('keyword', ['var'])
 
         # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
         # className (identifier).
         t = self.tokenizer
         tType = t.tokenType()
         if tType == 'keyword':
-            self.eat('keyword', [ 'int', 'char', 'boolean' ])
+            self.eat('keyword', ['int', 'char', 'boolean'])
         else:
             self.eat('identifier')
 
@@ -217,13 +218,13 @@ class CompilationEngine:
 
         # Expect an optional list of identifiers.
         while t.tokenType() == 'symbol' and t.symbol() == ',':
-            self.eat('symbol', ',')
+            self.eat('symbol', [','])
 
             # Expect an identifier
             self.eat('identifier')
 
         # Expect symbol ';'
-        self.eat('symbol', ';')
+        self.eat('symbol', [';'])
 
         # Emit closing tag
         self.emit('</varDec>')
@@ -290,7 +291,7 @@ class CompilationEngine:
         """
         pass
 
-    def eat(self, tokenType, tokenVals=[]):
+    def eat(self, tokenType, tokenVals=None):
         """
         Consume the current token if it matches the expected type and value.
         """
@@ -305,12 +306,8 @@ class CompilationEngine:
             tVal = t.identifier()
         elif tType == 'integerConstant':
             tVal = t.intVal()
-        else: # tType == 'stringConstant'
+        else:  # tType == 'stringConstant'
             tVal = t.stringVal()
-
-        # If tokenVals is not a list, make it one
-        if type(tokenVals) != type([]):
-            tokenVals = [tokenVals]
 
         # Verify that the type matches and the value is one of the values
         # expected.
@@ -332,10 +329,9 @@ class CompilationEngine:
             self.indentLevel = self.indentLevel - 1
 
         # Output the XML, indented to the current level
-        if self.DEBUG: print('{}{}'.format(self.INDENT * self.indentLevel,
-                                           xml))
-        self.xmlFile.write('{}{}\n'.format(self.INDENT * self.indentLevel,
-                                           xml))
+        if self.DEBUG:
+            print('{}{}'.format(self.INDENT * self.indentLevel, xml))
+        self.xmlFile.write('{}{}\n'.format(self.INDENT * self.indentLevel, xml))
 
         # If the XML does not contain '</', increase the indent level
         if '</' not in xml:
