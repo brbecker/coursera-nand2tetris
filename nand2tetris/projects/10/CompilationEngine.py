@@ -266,7 +266,37 @@ class CompilationEngine:
         """
         Compiles a let statement.
         """
-        pass
+        # Emit opening tag'
+        self.emit('<letStatement>')
+
+        # Expect 'let'
+        self.eat('keyword', ['let'])
+
+        # Expect an identifier
+        self.eat('identifier')
+
+        # Check for array qualifier
+        t = self.tokenizer
+        if t.tokenType() == 'symbol' and t.symbol() == '[':
+            self.eat('symbol', '[')
+
+            # Expect an expression
+            self.compileExpression()
+
+            # Expect ']'
+            self.eat('symbol', [']'])
+
+        # Expect '='
+        self.eat('symbol', ['='])
+
+        # Expect an expression
+        self.compileExpression()
+
+        # Expect ';'
+        self.eat('symbol', [';'])
+
+        # Emit closing tag
+        self.emit('</letStatement>')
 
     def compileWhile(self):
         """
