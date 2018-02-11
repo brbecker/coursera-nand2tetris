@@ -339,7 +339,13 @@ class CompilationEngine:
         # Emit opening tag
         self.emit('<whileStatement>')
 
-        self.tokenizer.advance()
+        self.eat('keyword', ['while'])
+        self.eat('symbol', ['('])
+        self.compileExpression()
+        self.eat('symbol', [')'])
+        self.eat('symbol', ['{'])
+        self.compileStatements()
+        self.eat('symbol', ['}'])
 
         # Emit closing tag
         self.emit('</whileStatement>')
