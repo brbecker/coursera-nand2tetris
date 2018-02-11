@@ -371,7 +371,20 @@ class CompilationEngine:
         # Emit opening tag
         self.emit('<ifStatement>')
 
-        self.tokenizer.advance()
+        self.eat('keyword', ['if'])
+        self.eat('symbol', ['('])
+        self.compileExpression()
+        self.eat('symbol', [')'])
+        self.eat('symbol', ['{'])
+        self.compileStatements()
+        self.eat('symbol', ['}'])
+
+        t = self.tokenizer
+        if t.tokenType() == 'keyword' and t.keyWord() == 'else':
+            self.eat('keyword', ['else'])
+            self.eat('symbol', ['{'])
+            self.compileStatements()
+            self.eat('symbol', ['}'])
 
         # Emit closing tag
         self.emit('</ifStatement>')
