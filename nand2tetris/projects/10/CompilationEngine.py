@@ -263,7 +263,29 @@ class CompilationEngine:
         # Emit opening tag'
         self.emit('<doStatement>')
 
-        self.tokenizer.advance()
+        # Expect 'do'
+        self.eat('keyword', ['do'])
+
+        # Expect an identifier (subroutine name, class name, or object name)
+        self.eat('identifier')
+
+        # Check for a '.', which indicates a method call
+        t = self.tokenizer
+        if t.tokenType() == 'symbol' and t.symbol() == '.':
+            # Eat the '.'
+            self.eat('symbol', ['.'])
+
+            # Expect an identifier (method name)
+            self.eat('identifier')
+
+        # Expect '('
+        self.eat('symbol', ['('])
+
+        # Expect an expression list
+        self.compileExpressionList()
+
+        # Expect ')'
+        self.eat('symbol', [')'])
 
         # Emit closing tag
         self.emit('</doStatement>')
