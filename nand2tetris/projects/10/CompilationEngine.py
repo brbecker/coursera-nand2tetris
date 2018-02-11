@@ -64,6 +64,10 @@ class CompilationEngine:
         # Emit the end class tag
         self.emit('</class>')
 
+        # Should not be any more input
+        if self.tokenizer.hasMoreTokens():
+            raise SyntaxError('Token after end of class: ' + self.tokenizer.currentToken)
+
     def compileClassVarDec(self):
         """
         Compiles a static declaration or a field declaration.
@@ -192,7 +196,6 @@ class CompilationEngine:
 
         # Emit closing tag
         self.emit('</parameterList>')
-        return
 
     def compileVarDec(self):
         """
@@ -497,7 +500,8 @@ class CompilationEngine:
         # expected.
         if tType == tokenType and (not tokenVals or tVal in tokenVals):
             self.emit('<{0}>{1}</{0}>'.format(tType, tVal))
-            t.advance()
+            if t.hasMoreTokens():
+                t.advance()
         else:
             raise SyntaxError('Expected {} {}. Found {}.'.format(tokenType,
                                                                  ' or '.join(tokenVals or []),
