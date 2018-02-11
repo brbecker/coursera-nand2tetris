@@ -260,7 +260,7 @@ class CompilationEngine:
         """
         Compiles a do statement.
         """
-        # Emit opening tag'
+        # Emit opening tag
         self.emit('<doStatement>')
 
         # Expect 'do'
@@ -297,7 +297,7 @@ class CompilationEngine:
         """
         Compiles a let statement.
         """
-        # Emit opening tag'
+        # Emit opening tag
         self.emit('<letStatement>')
 
         # Expect 'let'
@@ -333,7 +333,7 @@ class CompilationEngine:
         """
         Compiles a while statement.
         """
-        # Emit opening tag'
+        # Emit opening tag
         self.emit('<whileStatement>')
 
         self.tokenizer.advance()
@@ -345,10 +345,20 @@ class CompilationEngine:
         """
         Compiles a return statement.
         """
-        # Emit opening tag'
+        # Emit opening tag
         self.emit('<returnStatement>')
 
-        self.tokenizer.advance()
+        # Expect 'return'
+        self.eat('keyword', ['return'])
+
+        # If not a ';', expect an expression
+        t = self.tokenizer
+        if not (t.tokenType() == 'symbol' and t.symbol() == ';'):
+            # Expect an expression
+            self.compileExpression()
+
+        # Expect ';'
+        self.eat('symbol', [';'])
 
         # Emit closing tag
         self.emit('</returnStatement>')
@@ -358,7 +368,7 @@ class CompilationEngine:
         Compiles an if statement, possibly with a trailing else
         clause.
         """
-        # Emit opening tag'
+        # Emit opening tag
         self.emit('<ifStatement>')
 
         self.tokenizer.advance()
@@ -370,7 +380,7 @@ class CompilationEngine:
         """
         Compiles an expression.
         """
-        # Emit opening tag'
+        # Emit opening tag
         self.emit('<expression>')
 
         # Expect a term
@@ -389,7 +399,7 @@ class CompilationEngine:
         suffices to distinguish between the three possibilities. Any other
         token is not part of this term and should not be advanced over.
         """
-        # Emit opening tag'
+        # Emit opening tag
         self.emit('<term>')
 
         # Expect an identifier
@@ -402,7 +412,7 @@ class CompilationEngine:
         """
         Compiles a (possibly empty) comma-separated list of expressions.
         """
-        # Emit opening tag'
+        # Emit opening tag
         self.emit('<expressionList>')
 
         # Get the initial token type
@@ -446,7 +456,7 @@ class CompilationEngine:
             t.advance()
         else:
             raise SyntaxError('Expected {} {}. Found {}.'.format(tokenType,
-                                                                 ' or '.join(tokenVals),
+                                                                 ' or '.join(tokenVals or []),
                                                                  t.currentToken))
 
     def emit(self, xml):
