@@ -287,6 +287,9 @@ class CompilationEngine:
         # Expect ')'
         self.eat('symbol', [')'])
 
+        # Expect ';'
+        self.eat('symbol', [';'])
+
         # Emit closing tag
         self.emit('</doStatement>')
 
