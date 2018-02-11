@@ -25,7 +25,6 @@ class CompilationEngine:
         """
         Compiles a complete class.
         """
-        # Emit the class tag
         self.emit('<class>')
 
         # Alias self.tokenizer to make code more compact
@@ -39,13 +38,8 @@ class CompilationEngine:
             # If not, we're done.
             return
 
-        # Expect KEYWORD 'class'
         self.eat('keyword', ['class'])
-
-        # Expect IDENTIFIER and advance if found
         self.eat('identifier')
-
-        # Expect SYMBOL '{'
         self.eat('symbol', ['{'])
 
         # Expect zero or more classVarDecs
@@ -58,10 +52,7 @@ class CompilationEngine:
                 t.keyWord() in ['constructor', 'function', 'method']:
             self.compileSubroutine()
 
-        # Expect SYMBOL '}'
         self.eat('symbol', ['}'])
-
-        # Emit the end class tag
         self.emit('</class>')
 
         # Should not be any more input
@@ -74,10 +65,7 @@ class CompilationEngine:
         Should only be called if keyword static or keyword field is the current
         token.
         """
-        # Emit opening tag
         self.emit('<classVarDec>')
-
-        # Eat either a 'static' or 'field' keyword
         self.eat('keyword', ['static', 'field'])
 
         # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
@@ -89,20 +77,14 @@ class CompilationEngine:
         else:
             self.eat('identifier')
 
-        # Expect an identifier.
         self.eat('identifier')
 
         # Expect an optional list of identifiers.
         while t.tokenType() == 'symbol' and t.symbol() == ',':
             self.eat('symbol', [','])
-
-            # Expect an identifier
             self.eat('identifier')
 
-        # Expect symbol ';'
         self.eat('symbol', [';'])
-
-        # Emit closing tag
         self.emit('</classVarDec>')
 
     def compileSubroutine(self):
@@ -111,10 +93,7 @@ class CompilationEngine:
         Should only be called if the current token is one of 'constructor',
         'function', or 'method'.
         """
-        # Emit opening tag
         self.emit('<subroutineDec>')
-
-        # Eat keyword 'constructor', 'function', or 'method'.
         self.eat('keyword', ['constructor', 'function', 'method'])
 
         # Expect 'void' or a type: one of the keywords 'int', 'char', or
@@ -126,35 +105,19 @@ class CompilationEngine:
         else:
             self.eat('identifier')
 
-        # Expect an identifier.
         self.eat('identifier')
-
-        # Expect symbol '('.
         self.eat('symbol', ['('])
-
-        # Expect a parameter list
         self.compileParameterList()
-
-        # Expect symbol ')'.
         self.eat('symbol', [')'])
-
-        # Emit opening tag for subroutine body
         self.emit('<subroutineBody>')
-
-        # Expect symbol '{'.
         self.eat('symbol', ['{'])
 
         # Expect varDec*
         while t.tokenType() == 'keyword' and t.keyWord() == 'var':
             self.compileVarDec()
 
-        # Expect statements
         self.compileStatements()
-
-        # Expect symbol '}'.
         self.eat('symbol', ['}'])
-
-        # Emit closing tags
         self.emit('</subroutineBody>')
         self.emit('</subroutineDec>')
 
@@ -163,7 +126,6 @@ class CompilationEngine:
         Compiles a (possibly empty) parameter list, not including the
         enclosing "( )".
         """
-        # Emit opening tag
         self.emit('<parameterList>')
 
         # Alias for tokenizer
@@ -181,7 +143,6 @@ class CompilationEngine:
             else:
                 self.eat('identifier')
 
-            # Expect varName (identifier)
             self.eat('identifier')
 
             # Look for a ',' symbol
@@ -194,17 +155,13 @@ class CompilationEngine:
             else:
                 finished = True
 
-        # Emit closing tag
         self.emit('</parameterList>')
 
     def compileVarDec(self):
         """
         Compiles a var declaration.
         """
-        # Emit opening tag
         self.emit('<varDec>')
-
-        # Eat a 'var' keyword
         self.eat('keyword', ['var'])
 
         # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
@@ -216,20 +173,14 @@ class CompilationEngine:
         else:
             self.eat('identifier')
 
-        # Expect an identifier.
         self.eat('identifier')
 
         # Expect an optional list of identifiers.
         while t.tokenType() == 'symbol' and t.symbol() == ',':
             self.eat('symbol', [','])
-
-            # Expect an identifier
             self.eat('identifier')
 
-        # Expect symbol ';'
         self.eat('symbol', [';'])
-
-        # Emit closing tag
         self.emit('</varDec>')
 
     def compileStatements(self):
@@ -237,7 +188,6 @@ class CompilationEngine:
         Compiles a sequence of statements, not including the enclosing
         "{ }".
         """
-        # Emit opening tag
         self.emit('<statements>')
 
         t = self.tokenizer
@@ -256,89 +206,53 @@ class CompilationEngine:
             else:
                 raise SyntaxError('Expected statement. Found {}.'.format(t.currentToken))
 
-        # Emit closing tag
         self.emit('</statements>')
 
     def compileDo(self):
         """
         Compiles a do statement.
         """
-        # Emit opening tag
         self.emit('<doStatement>')
-
-        # Expect 'do'
         self.eat('keyword', ['do'])
-
-        # Expect an identifier (subroutine name, class name, or object name)
         self.eat('identifier')
 
         # Check for a '.', which indicates a method call
         t = self.tokenizer
         if t.tokenType() == 'symbol' and t.symbol() == '.':
-            # Eat the '.'
             self.eat('symbol', ['.'])
-
-            # Expect an identifier (method name)
             self.eat('identifier')
 
-        # Expect '('
         self.eat('symbol', ['('])
-
-        # Expect an expression list
         self.compileExpressionList()
-
-        # Expect ')'
         self.eat('symbol', [')'])
-
-        # Expect ';'
         self.eat('symbol', [';'])
-
-        # Emit closing tag
         self.emit('</doStatement>')
 
     def compileLet(self):
         """
         Compiles a let statement.
         """
-        # Emit opening tag
         self.emit('<letStatement>')
-
-        # Expect 'let'
         self.eat('keyword', ['let'])
-
-        # Expect an identifier
         self.eat('identifier')
 
         # Check for array qualifier
         t = self.tokenizer
         if t.tokenType() == 'symbol' and t.symbol() == '[':
             self.eat('symbol', '[')
-
-            # Expect an expression
             self.compileExpression()
-
-            # Expect ']'
             self.eat('symbol', [']'])
 
-        # Expect '='
         self.eat('symbol', ['='])
-
-        # Expect an expression
         self.compileExpression()
-
-        # Expect ';'
         self.eat('symbol', [';'])
-
-        # Emit closing tag
         self.emit('</letStatement>')
 
     def compileWhile(self):
         """
         Compiles a while statement.
         """
-        # Emit opening tag
         self.emit('<whileStatement>')
-
         self.eat('keyword', ['while'])
         self.eat('symbol', ['('])
         self.compileExpression()
@@ -346,18 +260,13 @@ class CompilationEngine:
         self.eat('symbol', ['{'])
         self.compileStatements()
         self.eat('symbol', ['}'])
-
-        # Emit closing tag
         self.emit('</whileStatement>')
 
     def compileReturn(self):
         """
         Compiles a return statement.
         """
-        # Emit opening tag
         self.emit('<returnStatement>')
-
-        # Expect 'return'
         self.eat('keyword', ['return'])
 
         # If not a ';', expect an expression
@@ -366,10 +275,7 @@ class CompilationEngine:
             # Expect an expression
             self.compileExpression()
 
-        # Expect ';'
         self.eat('symbol', [';'])
-
-        # Emit closing tag
         self.emit('</returnStatement>')
 
     def compileIf(self):
@@ -377,9 +283,7 @@ class CompilationEngine:
         Compiles an if statement, possibly with a trailing else
         clause.
         """
-        # Emit opening tag
         self.emit('<ifStatement>')
-
         self.eat('keyword', ['if'])
         self.eat('symbol', ['('])
         self.compileExpression()
@@ -395,20 +299,14 @@ class CompilationEngine:
             self.compileStatements()
             self.eat('symbol', ['}'])
 
-        # Emit closing tag
         self.emit('</ifStatement>')
 
     def compileExpression(self):
         """
         Compiles an expression.
         """
-        # Emit opening tag
         self.emit('<expression>')
-
-        # Expect a term
         self.compileTerm()
-
-        # Emit closing tag
         self.emit('</expression>')
 
     def compileTerm(self):
@@ -421,7 +319,6 @@ class CompilationEngine:
         suffices to distinguish between the three possibilities. Any other
         token is not part of this term and should not be advanced over.
         """
-        # Emit opening tag
         self.emit('<term>')
 
         # Get the current token type
@@ -455,14 +352,12 @@ class CompilationEngine:
             # Not a term
             raise SyntaxError('Expected term, found {}.'.format(t.currentToken))
 
-        # Emit closing tag
         self.emit('</term>')
 
     def compileExpressionList(self):
         """
         Compiles a (possibly empty) comma-separated list of expressions.
         """
-        # Emit opening tag
         self.emit('<expressionList>')
 
         # Get the initial token type
@@ -471,7 +366,6 @@ class CompilationEngine:
 
         # Closing parenthesis ends the list
         while not (tType == 'symbol' and t.symbol() == ')'):
-            # Expect an expression
             self.compileExpression()
 
             # Expect an optional ','
@@ -481,7 +375,6 @@ class CompilationEngine:
             # Update the tType
             tType = t.tokenType()
 
-        # Emit closing tag
         self.emit('</expressionList>')
 
     def eat(self, tokenType, tokenVals=None):
