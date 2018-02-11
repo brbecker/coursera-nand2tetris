@@ -5,7 +5,7 @@ DEBUG = True
 
 # Get Jack file or directory of files from the command line
 try:
-    arg  = sys.argv[1]
+    arg = sys.argv[1]
 except IndexError as e:
     print('Usage:JackAnalyzer.py file.jack|directory')
     sys.exit(1)

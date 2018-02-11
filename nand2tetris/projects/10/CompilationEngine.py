@@ -13,7 +13,7 @@ class CompilationEngine:
         Creates a new compilation engine with the given input and output. The
         next routine called must be compileClass().
         """
-        self.tokenizer = JackTokenizer(jackFile)
+        self.tokenizer = JackTokenizer(jackFile)#, DEBUG=DEBUG)
         self.xmlFile = open(xmlFile, mode='w')
         self.DEBUG = DEBUG
 
@@ -155,10 +155,43 @@ class CompilationEngine:
 
     def compileParameterList(self):
         """
-        Compiles a (possibly empty) parameter lsit, not including the
+        Compiles a (possibly empty) parameter list, not including the
         enclosing "( )".
         """
-        pass
+        # Emit opening tag
+        self.emit('<parameterList>')
+
+        # Alias for tokenizer
+        t = self.tokenizer
+
+        # Get the current token type
+        tType = t.tokenType()
+
+        # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
+        # className (identifier).
+        finished = False
+        while not finished and tType in [ 'keyword', 'identifier' ]:
+            if tType == 'keyword':
+                self.eat('keyword', [ 'int', 'char', 'boolean' ])
+            else:
+                self.eat('identifier')
+
+            # Expect varName (identifier)
+            self.eat('identifier')
+
+            # Look for a ',' symbol
+            if t.tokenType() == 'symbol' and t.symbol() == ',':
+                # If found, eat it
+                self.eat('symbol', ',')
+
+                # Get the next token type
+                tType = t.tokenType()
+            else:
+                finished = True
+
+        # Emit closing tag
+        self.emit('</parameterList>')
+        return
 
     def compileVarDec(self):
         """
@@ -270,6 +303,8 @@ class CompilationEngine:
             self.indentLevel = self.indentLevel - 1
 
         # Output the XML, indented to the current level
+        if self.DEBUG: print('{}{}'.format(self.INDENT * self.indentLevel,
+                                           xml))
         self.xmlFile.write('{}{}\n'.format(self.INDENT * self.indentLevel,
                                            xml))
 
