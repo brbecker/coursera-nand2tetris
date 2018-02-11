@@ -402,8 +402,36 @@ class CompilationEngine:
         # Emit opening tag
         self.emit('<term>')
 
-        # Expect an identifier
-        self.eat('identifier')
+        # Get the current token type
+        t = self.tokenizer
+        tType = t.tokenType()
+
+        # Integer constant
+        if tType == 'integerConstant':
+            self.eat('integerConstant')
+        # String constant
+        elif tType == 'stringConstant':
+            self.eat('stringConstant')
+        # Keyword constant
+        elif tType == 'keyword' and t.keyWord() in ['true', 'false', 'null', 'this']:
+            self.eat('keyword', ['true', 'false', 'null', 'this'])
+        # Identifier (varName, or array name, or subroutine call)
+        elif tType == 'identifier':
+            # TODO: needs more work
+            # Expect an identifier
+            self.eat('identifier')
+        # Sub-expression
+        elif tType == 'symbol' and t.symbol() == '(':
+            self.eat('symbol', ['('])
+            self.compileExpression()
+            self.eat('symbol', [')'])
+        # Unary op and term
+        elif tType == 'symbol' and t.symbol() in ['-', '~']:
+            self.eat('symbol', ['-', '~'])
+            self.compileTerm()
+        else:
+            # Not a term
+            raise SyntaxError('Expected term, found {}.'.format(t.currentToken))
 
         # Emit closing tag
         self.emit('</term>')
