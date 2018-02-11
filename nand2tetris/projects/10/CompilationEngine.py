@@ -260,7 +260,13 @@ class CompilationEngine:
         """
         Compiles a do statement.
         """
-        pass
+        # Emit opening tag'
+        self.emit('<doStatement>')
+
+        self.tokenizer.advance()
+
+        # Emit closing tag
+        self.emit('</doStatement>')
 
     def compileLet(self):
         """
@@ -302,26 +308,51 @@ class CompilationEngine:
         """
         Compiles a while statement.
         """
-        pass
+        # Emit opening tag'
+        self.emit('<whileStatement>')
+
+        self.tokenizer.advance()
+
+        # Emit closing tag
+        self.emit('</whileStatement>')
 
     def compileReturn(self):
         """
         Compiles a return statement.
         """
-        pass
+        # Emit opening tag'
+        self.emit('<returnStatement>')
+
+        self.tokenizer.advance()
+
+        # Emit closing tag
+        self.emit('</returnStatement>')
 
     def compileIf(self):
         """
         Compiles an if statement, possibly with a trailing else
         clause.
         """
-        pass
+        # Emit opening tag'
+        self.emit('<ifStatement>')
+
+        self.tokenizer.advance()
+
+        # Emit closing tag
+        self.emit('</ifStatement>')
 
     def compileExpression(self):
         """
         Compiles an expression.
         """
-        pass
+        # Emit opening tag'
+        self.emit('<expression>')
+
+        # Expect a term
+        self.compileTerm()
+
+        # Emit closing tag
+        self.emit('</expression>')
 
     def compileTerm(self):
         """
@@ -333,7 +364,14 @@ class CompilationEngine:
         suffices to distinguish between the three possibilities. Any other
         token is not part of this term and should not be advanced over.
         """
-        pass
+        # Emit opening tag'
+        self.emit('<term>')
+
+        # Expect an identifier
+        self.eat('identifier')
+
+        # Emit closing tag
+        self.emit('</term>')
 
     def compileExpressionList(self):
         """
