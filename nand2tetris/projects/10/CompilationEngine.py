@@ -234,7 +234,27 @@ class CompilationEngine:
         Compiles a sequence of statements, not including the enclosing
         "{ }".
         """
-        self.tokenizer.advance()
+        # Emit opening tag
+        self.emit('<statements>')
+
+        t = self.tokenizer
+        while t.tokenType() == 'keyword':
+            keyword = t.keyWord()
+            if keyword == 'do':
+                self.compileDo()
+            elif keyword == 'let':
+                self.compileLet()
+            elif keyword == 'while':
+                self.compileWhile()
+            elif keyword == 'return':
+                self.compileReturn()
+            elif keyword == 'if':
+                self.compileIf()
+            else:
+                raise SyntaxError('Expected statement. Found {}.'.format(t.currentToken))
+
+        # Emit closing tag
+        self.emit('</statements>')
 
     def compileDo(self):
         """
