@@ -89,7 +89,7 @@ class CompilationEngine:
 
         # Expect an optional list of identifiers.
         while t.tokenType() == 'symbol' and t.symbol() == ',':
-            t.advance()
+            self.eat('symbol', ',')
 
             # Expect an identifier
             self.eat('identifier')
@@ -197,14 +197,43 @@ class CompilationEngine:
         """
         Compiles a var declaration.
         """
-        pass
+        # Emit opening tag
+        self.emit('<varDec>')
+
+        # Eat a 'var' keyword
+        self.eat('keyword', 'var')
+
+        # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
+        # className (identifier).
+        t = self.tokenizer
+        tType = t.tokenType()
+        if tType == 'keyword':
+            self.eat('keyword', [ 'int', 'char', 'boolean' ])
+        else:
+            self.eat('identifier')
+
+        # Expect an identifier.
+        self.eat('identifier')
+
+        # Expect an optional list of identifiers.
+        while t.tokenType() == 'symbol' and t.symbol() == ',':
+            self.eat('symbol', ',')
+
+            # Expect an identifier
+            self.eat('identifier')
+
+        # Expect symbol ';'
+        self.eat('symbol', ';')
+
+        # Emit closing tag
+        self.emit('</varDec>')
 
     def compileStatements(self):
         """
         Compiles a sequence of statements, not including the enclosing
         "{ }".
         """
-        pass
+        self.tokenizer.advance()
 
     def compileDo(self):
         """
