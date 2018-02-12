@@ -344,9 +344,26 @@ class CompilationEngine:
             self.eat('keyword', ['true', 'false', 'null', 'this'])
         # Identifier (varName, or array name, or subroutine call)
         elif tType == 'identifier':
-            # TODO: needs more work
-            # Expect an identifier
             self.eat('identifier')
+            if t.tokenType() == 'symbol':
+                symbol = t.symbol()
+                if symbol == '[':
+                    # Array reference
+                    self.eat('symbol', ['['])
+                    self.compileExpression()
+                    self.eat('symbol', [']'])
+                elif symbol == '(':
+                    # Subroutine call
+                    self.eat('symbol', ['('])
+                    self.compileExpressionList()
+                    self.eat('symbol', [')'])
+                elif symbol == '.':
+                    # Method call
+                    self.eat('symbol', ['.'])
+                    self.eat('identifier')
+                    self.eat('symbol', ['('])
+                    self.compileExpressionList()
+                    self.eat('symbol', [')'])
         # Sub-expression
         elif tType == 'symbol' and t.symbol() == '(':
             self.eat('symbol', ['('])
