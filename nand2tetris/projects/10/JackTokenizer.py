@@ -157,17 +157,19 @@ class JackTokenizer:
         assert self.tokenType() == "symbol", \
             'Current token is not a symbol: ' + token
 
-        # Protect <, >, and & tokens from XML
-        if token == '<':
-            token = '&lt;'
-        elif token == '>':
-            token = '&gt;'
-        elif token == '&':
-            token = '&amp;'
-
         if self.tokenizerFile:
+            # Protect <, >, and & tokens from XML
+            if token == '<':
+                qtoken = '&lt;'
+            elif token == '>':
+                qtoken = '&gt;'
+            elif token == '&':
+                qtoken = '&amp;'
+            else:
+                qtoken = token
+
             self.tokenizerFile.write('  <symbol>' + \
-                                     token + \
+                                     qtoken + \
                                      '</symbol>\n')
         return token
 

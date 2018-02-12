@@ -307,6 +307,14 @@ class CompilationEngine:
         """
         self.emit('<expression>')
         self.compileTerm()
+
+        # Look for operator-term pairs
+        t = self.tokenizer
+        ops = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
+        while t.tokenType() == 'symbol' and t.symbol() in ops:
+            self.eat('symbol', ops)
+            self.compileTerm()
+
         self.emit('</expression>')
 
     def compileTerm(self):
@@ -398,7 +406,17 @@ class CompilationEngine:
         # Verify that the type matches and the value is one of the values
         # expected.
         if tType == tokenType and (not tokenVals or tVal in tokenVals):
-            self.emit('<{0}>{1}</{0}>'.format(tType, tVal))
+            # Protect <, >, and & tokens from XML
+            if tVal == '<':
+                qtoken = '&lt;'
+            elif tVal == '>':
+                qtoken = '&gt;'
+            elif tVal == '&':
+                qtoken = '&amp;'
+            else:
+                qtoken = tVal
+
+            self.emit('<{0}>{1}</{0}>'.format(tType, qtoken))
             if t.hasMoreTokens():
                 t.advance()
         else:
