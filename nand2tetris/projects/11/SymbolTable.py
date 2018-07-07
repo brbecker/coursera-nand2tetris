@@ -17,6 +17,7 @@ class SymbolTable():
         self.classTable = {}
         self.subroutineTable = {}
 
+        self.counts = {}
         self.counts['STATIC'] = 0
         self.counts['FIELD'] = 0
         self.counts['ARG'] = 0
