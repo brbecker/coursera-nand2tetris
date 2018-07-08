@@ -46,7 +46,7 @@ class JackTokenizer:
         # Read the entire file into memory. Dangerous if the file is huge, but
         # unlikely.
         f = open(jackFile)
-        s = f.read();
+        s = f.read()
         f.close()
 
         # Remove multi-line comments. Comments in string literals will be a
