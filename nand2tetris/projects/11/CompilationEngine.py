@@ -38,9 +38,9 @@ class CompilationEngine:
             # If not, we're done.
             return
 
-        self.eat('keyword', ['class'])
+        self.eatAndEmit('keyword', ['class'])
         self.eat('identifier')
-        self.eat('symbol', ['{'])
+        self.eatAndEmit('symbol', ['{'])
 
         # Expect zero or more classVarDecs
         while t.tokenType() == 'keyword' and \
@@ -52,7 +52,7 @@ class CompilationEngine:
                 t.keyWord() in ['constructor', 'function', 'method']:
             self.compileSubroutine()
 
-        self.eat('symbol', ['}'])
+        self.eatAndEmit('symbol', ['}'])
         self.emit(xml='</class>')
 
         # Should not be any more input
@@ -66,14 +66,14 @@ class CompilationEngine:
         token.
         """
         self.emit(xml='<classVarDec>')
-        self.eat('keyword', ['static', 'field'])
+        self.eatAndEmit('keyword', ['static', 'field'])
 
         # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
         # className (identifier).
         t = self.tokenizer
         tType = t.tokenType()
         if tType == 'keyword':
-            self.eat('keyword', ['int', 'char', 'boolean'])
+            self.eatAndEmit('keyword', ['int', 'char', 'boolean'])
         else:
             self.eat('identifier')
 
@@ -81,10 +81,10 @@ class CompilationEngine:
 
         # Expect an optional list of identifiers.
         while t.tokenType() == 'symbol' and t.symbol() == ',':
-            self.eat('symbol', [','])
+            self.eatAndEmit('symbol', [','])
             self.eat('identifier')
 
-        self.eat('symbol', [';'])
+        self.eatAndEmit('symbol', [';'])
         self.emit(xml='</classVarDec>')
 
     def compileSubroutine(self):
@@ -94,30 +94,30 @@ class CompilationEngine:
         'function', or 'method'.
         """
         self.emit(xml='<subroutineDec>')
-        self.eat('keyword', ['constructor', 'function', 'method'])
+        self.eatAndEmit('keyword', ['constructor', 'function', 'method'])
 
         # Expect 'void' or a type: one of the keywords 'int', 'char', or
         # 'boolean', or a className (identifier).
         t = self.tokenizer
         tType = t.tokenType()
         if tType == 'keyword':
-            self.eat('keyword', ['void', 'int', 'char', 'boolean'])
+            self.eatAndEmit('keyword', ['void', 'int', 'char', 'boolean'])
         else:
             self.eat('identifier')
 
         self.eat('identifier')
-        self.eat('symbol', ['('])
+        self.eatAndEmit('symbol', ['('])
         self.compileParameterList()
-        self.eat('symbol', [')'])
+        self.eatAndEmit('symbol', [')'])
         self.emit(xml='<subroutineBody>')
-        self.eat('symbol', ['{'])
+        self.eatAndEmit('symbol', ['{'])
 
         # Expect varDec*
         while t.tokenType() == 'keyword' and t.keyWord() == 'var':
             self.compileVarDec()
 
         self.compileStatements()
-        self.eat('symbol', ['}'])
+        self.eatAndEmit('symbol', ['}'])
         self.emit(xml='</subroutineBody>')
         self.emit(xml='</subroutineDec>')
 
@@ -139,7 +139,7 @@ class CompilationEngine:
         finished = False
         while not finished and tType in ['keyword', 'identifier']:
             if tType == 'keyword':
-                self.eat('keyword', ['int', 'char', 'boolean'])
+                self.eatAndEmit('keyword', ['int', 'char', 'boolean'])
             else:
                 self.eat('identifier')
 
@@ -148,7 +148,7 @@ class CompilationEngine:
             # Look for a ',' symbol
             if t.tokenType() == 'symbol' and t.symbol() == ',':
                 # If found, eat it
-                self.eat('symbol', [','])
+                self.eatAndEmit('symbol', [','])
 
                 # Get the next token type
                 tType = t.tokenType()
@@ -162,14 +162,14 @@ class CompilationEngine:
         Compiles a var declaration.
         """
         self.emit(xml='<varDec>')
-        self.eat('keyword', ['var'])
+        self.eatAndEmit('keyword', ['var'])
 
         # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
         # className (identifier).
         t = self.tokenizer
         tType = t.tokenType()
         if tType == 'keyword':
-            self.eat('keyword', ['int', 'char', 'boolean'])
+            self.eatAndEmit('keyword', ['int', 'char', 'boolean'])
         else:
             self.eat('identifier')
 
@@ -177,10 +177,10 @@ class CompilationEngine:
 
         # Expect an optional list of identifiers.
         while t.tokenType() == 'symbol' and t.symbol() == ',':
-            self.eat('symbol', [','])
+            self.eatAndEmit('symbol', [','])
             self.eat('identifier')
 
-        self.eat('symbol', [';'])
+        self.eatAndEmit('symbol', [';'])
         self.emit(xml='</varDec>')
 
     def compileStatements(self):
@@ -213,19 +213,19 @@ class CompilationEngine:
         Compiles a do statement.
         """
         self.emit(xml='<doStatement>')
-        self.eat('keyword', ['do'])
+        self.eatAndEmit('keyword', ['do'])
         self.eat('identifier')
 
         # Check for a '.', which indicates a method call
         t = self.tokenizer
         if t.tokenType() == 'symbol' and t.symbol() == '.':
-            self.eat('symbol', ['.'])
+            self.eatAndEmit('symbol', ['.'])
             self.eat('identifier')
 
-        self.eat('symbol', ['('])
+        self.eatAndEmit('symbol', ['('])
         self.compileExpressionList()
-        self.eat('symbol', [')'])
-        self.eat('symbol', [';'])
+        self.eatAndEmit('symbol', [')'])
+        self.eatAndEmit('symbol', [';'])
         self.emit(xml='</doStatement>')
 
     def compileLet(self):
@@ -233,19 +233,19 @@ class CompilationEngine:
         Compiles a let statement.
         """
         self.emit(xml='<letStatement>')
-        self.eat('keyword', ['let'])
+        self.eatAndEmit('keyword', ['let'])
         self.eat('identifier')
 
         # Check for array qualifier
         t = self.tokenizer
         if t.tokenType() == 'symbol' and t.symbol() == '[':
-            self.eat('symbol', '[')
+            self.eatAndEmit('symbol', '[')
             self.compileExpression()
-            self.eat('symbol', [']'])
+            self.eatAndEmit('symbol', [']'])
 
-        self.eat('symbol', ['='])
+        self.eatAndEmit('symbol', ['='])
         self.compileExpression()
-        self.eat('symbol', [';'])
+        self.eatAndEmit('symbol', [';'])
         self.emit(xml='</letStatement>')
 
     def compileWhile(self):
@@ -253,13 +253,13 @@ class CompilationEngine:
         Compiles a while statement.
         """
         self.emit(xml='<whileStatement>')
-        self.eat('keyword', ['while'])
-        self.eat('symbol', ['('])
+        self.eatAndEmit('keyword', ['while'])
+        self.eatAndEmit('symbol', ['('])
         self.compileExpression()
-        self.eat('symbol', [')'])
-        self.eat('symbol', ['{'])
+        self.eatAndEmit('symbol', [')'])
+        self.eatAndEmit('symbol', ['{'])
         self.compileStatements()
-        self.eat('symbol', ['}'])
+        self.eatAndEmit('symbol', ['}'])
         self.emit(xml='</whileStatement>')
 
     def compileReturn(self):
@@ -267,7 +267,7 @@ class CompilationEngine:
         Compiles a return statement.
         """
         self.emit(xml='<returnStatement>')
-        self.eat('keyword', ['return'])
+        self.eatAndEmit('keyword', ['return'])
 
         # If not a ';', expect an expression
         t = self.tokenizer
@@ -275,7 +275,7 @@ class CompilationEngine:
             # Expect an expression
             self.compileExpression()
 
-        self.eat('symbol', [';'])
+        self.eatAndEmit('symbol', [';'])
         self.emit(xml='</returnStatement>')
 
     def compileIf(self):
@@ -284,20 +284,20 @@ class CompilationEngine:
         clause.
         """
         self.emit(xml='<ifStatement>')
-        self.eat('keyword', ['if'])
-        self.eat('symbol', ['('])
+        self.eatAndEmit('keyword', ['if'])
+        self.eatAndEmit('symbol', ['('])
         self.compileExpression()
-        self.eat('symbol', [')'])
-        self.eat('symbol', ['{'])
+        self.eatAndEmit('symbol', [')'])
+        self.eatAndEmit('symbol', ['{'])
         self.compileStatements()
-        self.eat('symbol', ['}'])
+        self.eatAndEmit('symbol', ['}'])
 
         t = self.tokenizer
         if t.tokenType() == 'keyword' and t.keyWord() == 'else':
-            self.eat('keyword', ['else'])
-            self.eat('symbol', ['{'])
+            self.eatAndEmit('keyword', ['else'])
+            self.eatAndEmit('symbol', ['{'])
             self.compileStatements()
-            self.eat('symbol', ['}'])
+            self.eatAndEmit('symbol', ['}'])
 
         self.emit(xml='</ifStatement>')
 
@@ -312,7 +312,7 @@ class CompilationEngine:
         t = self.tokenizer
         ops = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
         while t.tokenType() == 'symbol' and t.symbol() in ops:
-            self.eat('symbol', ops)
+            self.eatAndEmit('symbol', ops)
             self.compileTerm()
 
         self.emit(xml='</expression>')
@@ -335,13 +335,13 @@ class CompilationEngine:
 
         # Integer constant
         if tType == 'integerConstant':
-            self.eat('integerConstant')
+            self.eatAndEmit('integerConstant')
         # String constant
         elif tType == 'stringConstant':
-            self.eat('stringConstant')
+            self.eatAndEmit('stringConstant')
         # Keyword constant
         elif tType == 'keyword' and t.keyWord() in ['true', 'false', 'null', 'this']:
-            self.eat('keyword', ['true', 'false', 'null', 'this'])
+            self.eatAndEmit('keyword', ['true', 'false', 'null', 'this'])
         # Identifier (varName, or array name, or subroutine call)
         elif tType == 'identifier':
             self.eat('identifier')
@@ -349,29 +349,29 @@ class CompilationEngine:
                 symbol = t.symbol()
                 if symbol == '[':
                     # Array reference
-                    self.eat('symbol', ['['])
+                    self.eatAndEmit('symbol', ['['])
                     self.compileExpression()
-                    self.eat('symbol', [']'])
+                    self.eatAndEmit('symbol', [']'])
                 elif symbol == '(':
                     # Subroutine call
-                    self.eat('symbol', ['('])
+                    self.eatAndEmit('symbol', ['('])
                     self.compileExpressionList()
-                    self.eat('symbol', [')'])
+                    self.eatAndEmit('symbol', [')'])
                 elif symbol == '.':
                     # Method call
-                    self.eat('symbol', ['.'])
+                    self.eatAndEmit('symbol', ['.'])
                     self.eat('identifier')
-                    self.eat('symbol', ['('])
+                    self.eatAndEmit('symbol', ['('])
                     self.compileExpressionList()
-                    self.eat('symbol', [')'])
+                    self.eatAndEmit('symbol', [')'])
         # Sub-expression
         elif tType == 'symbol' and t.symbol() == '(':
-            self.eat('symbol', ['('])
+            self.eatAndEmit('symbol', ['('])
             self.compileExpression()
-            self.eat('symbol', [')'])
+            self.eatAndEmit('symbol', [')'])
         # Unary op and term
         elif tType == 'symbol' and t.symbol() in ['-', '~']:
-            self.eat('symbol', ['-', '~'])
+            self.eatAndEmit('symbol', ['-', '~'])
             self.compileTerm()
         else:
             # Not a term
@@ -395,7 +395,7 @@ class CompilationEngine:
 
             # Expect an optional ','
             if t.tokenType() == 'symbol' and t.symbol() == ',':
-                self.eat('symbol', [','])
+                self.eatAndEmit('symbol', [','])
 
             # Update the tType
             tType = t.tokenType()
@@ -467,3 +467,7 @@ class CompilationEngine:
             return '&amp;'
         else:
             return token
+
+    def eatAndEmit(self, tokenType, tokenVals=None):
+        # Shorthand for common pattern
+        self.emit(token=self.eat(tokenType, tokenVals))
