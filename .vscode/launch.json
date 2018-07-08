@@ -12,7 +12,7 @@
             "cwd": "${workspaceFolder}/nand2tetris/projects/11",
             "program": "${workspaceFolder}/nand2tetris/projects/11/JackCompiler.py",
             "args": [
-                "Seven/Main.jack",
+                "Seven",
             ],
             "debugOptions": [
                 "RedirectOutput"

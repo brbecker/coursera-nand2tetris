@@ -422,24 +422,27 @@ class CompilationEngine:
 
         # Verify that the type matches and the value is one of the values
         # expected.
-        if tType == tokenType and (not tokenVals or tVal in tokenVals):
-            # Protect <, >, and & tokens from XML
-            if tVal == '<':
-                qtoken = '&lt;'
-            elif tVal == '>':
-                qtoken = '&gt;'
-            elif tVal == '&':
-                qtoken = '&amp;'
-            else:
-                qtoken = tVal
-
-            self.emit('<{0}>{1}</{0}>'.format(tType, qtoken))
-            if t.hasMoreTokens():
-                t.advance()
-        else:
+        if not (tType == tokenType and (not tokenVals or tVal in tokenVals)):
             raise SyntaxError('Expected {} {}. Found {}.'.format(tokenType,
                                                                  ' or '.join(tokenVals or []),
                                                                  t.currentToken))
+
+        if t.hasMoreTokens():
+            t.advance()
+
+        # Return the actual token type and XML-protected value
+        return (tType, self.xmlProtect(tVal))
+
+    def xmlProtect(self, token):
+        # Protect <, >, and & tokens from XML
+        if token == '<':
+            return '&lt;'
+        elif token == '>':
+            return '&gt;'
+        elif token == '&':
+            return '&amp;'
+        else:
+            return token
 
     def emit(self, xml):
         """
