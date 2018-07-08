@@ -25,7 +25,7 @@ class CompilationEngine:
         """
         Compiles a complete class.
         """
-        self.emit('<class>')
+        self.emit(xml='<class>')
 
         # Alias self.tokenizer to make code more compact
         t = self.tokenizer
@@ -53,7 +53,7 @@ class CompilationEngine:
             self.compileSubroutine()
 
         self.eat('symbol', ['}'])
-        self.emit('</class>')
+        self.emit(xml='</class>')
 
         # Should not be any more input
         if self.tokenizer.hasMoreTokens():
@@ -65,7 +65,7 @@ class CompilationEngine:
         Should only be called if keyword static or keyword field is the current
         token.
         """
-        self.emit('<classVarDec>')
+        self.emit(xml='<classVarDec>')
         self.eat('keyword', ['static', 'field'])
 
         # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
@@ -85,7 +85,7 @@ class CompilationEngine:
             self.eat('identifier')
 
         self.eat('symbol', [';'])
-        self.emit('</classVarDec>')
+        self.emit(xml='</classVarDec>')
 
     def compileSubroutine(self):
         """
@@ -93,7 +93,7 @@ class CompilationEngine:
         Should only be called if the current token is one of 'constructor',
         'function', or 'method'.
         """
-        self.emit('<subroutineDec>')
+        self.emit(xml='<subroutineDec>')
         self.eat('keyword', ['constructor', 'function', 'method'])
 
         # Expect 'void' or a type: one of the keywords 'int', 'char', or
@@ -109,7 +109,7 @@ class CompilationEngine:
         self.eat('symbol', ['('])
         self.compileParameterList()
         self.eat('symbol', [')'])
-        self.emit('<subroutineBody>')
+        self.emit(xml='<subroutineBody>')
         self.eat('symbol', ['{'])
 
         # Expect varDec*
@@ -118,15 +118,15 @@ class CompilationEngine:
 
         self.compileStatements()
         self.eat('symbol', ['}'])
-        self.emit('</subroutineBody>')
-        self.emit('</subroutineDec>')
+        self.emit(xml='</subroutineBody>')
+        self.emit(xml='</subroutineDec>')
 
     def compileParameterList(self):
         """
         Compiles a (possibly empty) parameter list, not including the
         enclosing "( )".
         """
-        self.emit('<parameterList>')
+        self.emit(xml='<parameterList>')
 
         # Alias for tokenizer
         t = self.tokenizer
@@ -155,13 +155,13 @@ class CompilationEngine:
             else:
                 finished = True
 
-        self.emit('</parameterList>')
+        self.emit(xml='</parameterList>')
 
     def compileVarDec(self):
         """
         Compiles a var declaration.
         """
-        self.emit('<varDec>')
+        self.emit(xml='<varDec>')
         self.eat('keyword', ['var'])
 
         # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
@@ -181,14 +181,14 @@ class CompilationEngine:
             self.eat('identifier')
 
         self.eat('symbol', [';'])
-        self.emit('</varDec>')
+        self.emit(xml='</varDec>')
 
     def compileStatements(self):
         """
         Compiles a sequence of statements, not including the enclosing
         "{ }".
         """
-        self.emit('<statements>')
+        self.emit(xml='<statements>')
 
         t = self.tokenizer
         while t.tokenType() == 'keyword':
@@ -206,13 +206,13 @@ class CompilationEngine:
             else:
                 raise SyntaxError('Expected statement. Found {}.'.format(t.currentToken))
 
-        self.emit('</statements>')
+        self.emit(xml='</statements>')
 
     def compileDo(self):
         """
         Compiles a do statement.
         """
-        self.emit('<doStatement>')
+        self.emit(xml='<doStatement>')
         self.eat('keyword', ['do'])
         self.eat('identifier')
 
@@ -226,13 +226,13 @@ class CompilationEngine:
         self.compileExpressionList()
         self.eat('symbol', [')'])
         self.eat('symbol', [';'])
-        self.emit('</doStatement>')
+        self.emit(xml='</doStatement>')
 
     def compileLet(self):
         """
         Compiles a let statement.
         """
-        self.emit('<letStatement>')
+        self.emit(xml='<letStatement>')
         self.eat('keyword', ['let'])
         self.eat('identifier')
 
@@ -246,13 +246,13 @@ class CompilationEngine:
         self.eat('symbol', ['='])
         self.compileExpression()
         self.eat('symbol', [';'])
-        self.emit('</letStatement>')
+        self.emit(xml='</letStatement>')
 
     def compileWhile(self):
         """
         Compiles a while statement.
         """
-        self.emit('<whileStatement>')
+        self.emit(xml='<whileStatement>')
         self.eat('keyword', ['while'])
         self.eat('symbol', ['('])
         self.compileExpression()
@@ -260,13 +260,13 @@ class CompilationEngine:
         self.eat('symbol', ['{'])
         self.compileStatements()
         self.eat('symbol', ['}'])
-        self.emit('</whileStatement>')
+        self.emit(xml='</whileStatement>')
 
     def compileReturn(self):
         """
         Compiles a return statement.
         """
-        self.emit('<returnStatement>')
+        self.emit(xml='<returnStatement>')
         self.eat('keyword', ['return'])
 
         # If not a ';', expect an expression
@@ -276,14 +276,14 @@ class CompilationEngine:
             self.compileExpression()
 
         self.eat('symbol', [';'])
-        self.emit('</returnStatement>')
+        self.emit(xml='</returnStatement>')
 
     def compileIf(self):
         """
         Compiles an if statement, possibly with a trailing else
         clause.
         """
-        self.emit('<ifStatement>')
+        self.emit(xml='<ifStatement>')
         self.eat('keyword', ['if'])
         self.eat('symbol', ['('])
         self.compileExpression()
@@ -299,13 +299,13 @@ class CompilationEngine:
             self.compileStatements()
             self.eat('symbol', ['}'])
 
-        self.emit('</ifStatement>')
+        self.emit(xml='</ifStatement>')
 
     def compileExpression(self):
         """
         Compiles an expression.
         """
-        self.emit('<expression>')
+        self.emit(xml='<expression>')
         self.compileTerm()
 
         # Look for operator-term pairs
@@ -315,7 +315,7 @@ class CompilationEngine:
             self.eat('symbol', ops)
             self.compileTerm()
 
-        self.emit('</expression>')
+        self.emit(xml='</expression>')
 
     def compileTerm(self):
         """
@@ -327,7 +327,7 @@ class CompilationEngine:
         suffices to distinguish between the three possibilities. Any other
         token is not part of this term and should not be advanced over.
         """
-        self.emit('<term>')
+        self.emit(xml='<term>')
 
         # Get the current token type
         t = self.tokenizer
@@ -377,13 +377,13 @@ class CompilationEngine:
             # Not a term
             raise SyntaxError('Expected term, found {}.'.format(t.currentToken))
 
-        self.emit('</term>')
+        self.emit(xml='</term>')
 
     def compileExpressionList(self):
         """
         Compiles a (possibly empty) comma-separated list of expressions.
         """
-        self.emit('<expressionList>')
+        self.emit(xml='<expressionList>')
 
         # Get the initial token type
         t = self.tokenizer
@@ -400,7 +400,7 @@ class CompilationEngine:
             # Update the tType
             tType = t.tokenType()
 
-        self.emit('</expressionList>')
+        self.emit(xml='</expressionList>')
 
     def eat(self, tokenType, tokenVals=None):
         """
@@ -430,25 +430,19 @@ class CompilationEngine:
         if t.hasMoreTokens():
             t.advance()
 
-        # Return the actual token type and XML-protected value
-        return (tType, self.xmlProtect(tVal))
+        # Return the actual token type and value
+        return (tType, tVal)
 
-    def xmlProtect(self, token):
-        # Protect <, >, and & tokens from XML
-        if token == '<':
-            return '&lt;'
-        elif token == '>':
-            return '&gt;'
-        elif token == '&':
-            return '&amp;'
-        else:
-            return token
+    def emit(self, token=None, xml=None):
+        """
+        Emit the provided XML or token as XML to the xmlFile.
+        Will indent based on the current indentLevel.
+        """
+        # If XML code not provided, create it from the token type and value
+        if not xml:
+            (tokenType, tokenVal) = token
+            xml = "<{0}>{1}</{0}>".format(tokenType, self.xmlProtect(tokenVal))
 
-    def emit(self, xml):
-        """
-        Emit the provided XML data as a line to the xmlFile. Will indent based
-        on the current indentLevel.
-        """
         # If the XML starts with '</', reduce the indent level
         if xml[:2] == '</':
             self.indentLevel = self.indentLevel - 1
@@ -462,3 +456,14 @@ class CompilationEngine:
         # If the XML does not contain '</', increase the indent level
         if '</' not in xml:
             self.indentLevel = self.indentLevel + 1
+
+    def xmlProtect(self, token):
+        # Protect <, >, and & tokens from XML
+        if token == '<':
+            return '&lt;'
+        elif token == '>':
+            return '&gt;'
+        elif token == '&':
+            return '&amp;'
+        else:
+            return token
