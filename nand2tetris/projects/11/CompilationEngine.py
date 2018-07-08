@@ -451,9 +451,10 @@ class CompilationEngine:
             self.indentLevel = self.indentLevel - 1
 
         # Output the XML, indented to the current level
+        output = '{}{}'.format(self.INDENT * self.indentLevel, xml)
+        self.xmlFile.write(output)
         if self.DEBUG:
-            print('{}{}'.format(self.INDENT * self.indentLevel, xml))
-        self.xmlFile.write('{}{}\n'.format(self.INDENT * self.indentLevel, xml))
+            print(output)
 
         # If the XML does not contain '</', increase the indent level
         if '</' not in xml:
