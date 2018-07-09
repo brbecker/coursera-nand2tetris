@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: 11: Seven.jack",
+            "name": "N2T 11: Seven",
             "type": "python",
             "request": "launch",
             "pythonPath": "${config:python.pythonPath}",
@@ -13,6 +13,20 @@
             "program": "${workspaceFolder}/nand2tetris/projects/11/JackCompiler.py",
             "args": [
                 "Seven",
+            ],
+            "debugOptions": [
+                "RedirectOutput"
+            ]
+        },
+        {
+            "name": "N2T 11: ConvertToBin",
+            "type": "python",
+            "request": "launch",
+            "pythonPath": "${config:python.pythonPath}",
+            "cwd": "${workspaceFolder}/nand2tetris/projects/11",
+            "program": "${workspaceFolder}/nand2tetris/projects/11/JackCompiler.py",
+            "args": [
+                "ConvertToBin",
             ],
             "debugOptions": [
                 "RedirectOutput"
