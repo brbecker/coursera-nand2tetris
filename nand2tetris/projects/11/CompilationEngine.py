@@ -23,7 +23,7 @@ class CompilationEngine:
         self.indentLevel = 0
 
         # Initialize the symbol table
-        self.symtab = SymbolTable(DEBUG=DEBUG)
+        self.symtab = SymbolTable(DEBUG=True)
 
     def compileClass(self):
         '''
@@ -149,11 +149,11 @@ class CompilationEngine:
         finished = False
         while not finished and tType in ['keyword', 'identifier']:
             if tType == 'keyword':
-                self.eatAndEmit('keyword', ['int', 'char', 'boolean'])
+                (_, varType) = self.eatAndEmit('keyword', ['int', 'char', 'boolean'])
             else:
-                self.eatAndEmit('identifier', category='CLASS', state='USE')
+                (_, varType) = self.eatAndEmit('identifier', category='CLASS', state='USE')
 
-            self.eatAndEmit('identifier', category='ARG', state='DEFINE')
+            self.eatAndEmit('identifier', category='ARG', state='DEFINE', varType=varType)
 
             # Look for a ',' symbol
             if t.tokenType() == 'symbol' and t.symbol() == ',':

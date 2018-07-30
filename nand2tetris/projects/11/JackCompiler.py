@@ -1,7 +1,7 @@
 import sys, os, os.path
 from CompilationEngine import CompilationEngine
 
-DEBUG = True
+DEBUG = False
 
 # Get Jack file or directory of files from the command line
 try:
