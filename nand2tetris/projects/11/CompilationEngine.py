@@ -105,6 +105,9 @@ class CompilationEngine:
         self.emit(xml='<subroutineDec>')
         self.eatAndEmit('keyword', ['constructor', 'function', 'method'])
 
+        # Reset the subroutine symbol table
+        self.symtab.startSubroutine()
+
         # Expect 'void' or a type: one of the keywords 'int', 'char', or
         # 'boolean', or a className (identifier).
         t = self.tokenizer
