@@ -1,4 +1,5 @@
 from JackTokenizer import JackTokenizer
+from SymbolTable import SymbolTable
 
 
 class CompilationEngine:
@@ -170,21 +171,21 @@ class CompilationEngine:
         self.emit(xml='<varDec>')
         self.eatAndEmit('keyword', ['var'])
 
-        # Expect a type: one of the keywords 'int', 'char', or 'boolean', or a
-        # className (identifier).
+        # Expect a type for the variable: one of the keywords 'int', 'char',
+        # or 'boolean', or a className (identifier). Save the variable type.
         t = self.tokenizer
         tType = t.tokenType()
         if tType == 'keyword':
-            self.eatAndEmit('keyword', ['int', 'char', 'boolean'])
+            (_, varType) = self.eatAndEmit('keyword', ['int', 'char', 'boolean'])
         else:
-            self.eatAndEmit('identifier', category='CLASS', state='USE')
+            (_, varType) = self.eatAndEmit('identifier', category='CLASS', state='USE')
 
-        self.eatAndEmit('identifier', category='VAR', state='DEFINE')
+        self.eatAndEmit('identifier', category='VAR', state='DEFINE', varType=varType)
 
         # Expect an optional list of identifiers.
         while t.tokenType() == 'symbol' and t.symbol() == ',':
             self.eatAndEmit('symbol', [','])
-            self.eatAndEmit('identifier', category='VAR', state='DEFINE')
+            self.eatAndEmit('identifier', category='VAR', state='DEFINE', varType=varType)
 
         self.eatAndEmit('symbol', [';'])
         self.emit(xml='</varDec>')
@@ -444,7 +445,7 @@ class CompilationEngine:
         # Return the actual token type and value
         return (tType, tVal)
 
-    def emit(self, token=None, category='', state='', xml=None):
+    def emit(self, token=None, category='', state='', varType='', xml=None):
         '''
         Emit the provided XML or token as XML to the xmlFile.
         Will indent based on the current indentLevel.
@@ -456,12 +457,15 @@ class CompilationEngine:
             if category:
                 fields += ' category=' + category
             if state:
-                fields += ' state=' + state + ' index=TBD'
+                fields += ' state=' + state
+            if varType:
+                fields += ' varType=' + varType
             xml = '<{0}{2}>{1}</{0}>'.format(tokenType, self.xmlProtect(tokenVal), fields)
 
-        # If the XML starts with '</', reduce the indent level
-        if xml[:2] == '</':
-            self.indentLevel = self.indentLevel - 1
+        else:
+            # If the XML starts with '</', reduce the indent level
+            if xml[:2] == '</':
+                self.indentLevel = self.indentLevel - 1
 
         # Output the XML, indented to the current level
         output = '{}{}\n'.format(self.INDENT * self.indentLevel, xml)
@@ -473,9 +477,15 @@ class CompilationEngine:
         if '</' not in xml:
             self.indentLevel = self.indentLevel + 1
 
-    def eatAndEmit(self, tokenType, tokenVals=None, category='', state=''):
-        # Shorthand for common pattern
-        self.emit(token=self.eat(tokenType, tokenVals), category=category, state=state)
+    def eatAndEmit(self, tokenType, tokenVals=None, category='', state='', varType=''):
+        '''
+        Shorthand for common pattern of eat and emit. Returns the token eaten.
+        '''
+        token = self.eat(tokenType, tokenVals)
+        self.emit(token=token, category=category, state=state, varType=varType)
+        
+        # Return the token in case the caller wants it
+        return token
 
     def xmlProtect(self, token):
         # Protect <, >, and & tokens from XML
