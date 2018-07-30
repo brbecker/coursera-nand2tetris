@@ -26,7 +26,7 @@ class SymbolTable():
         self.counts['VAR'] = 0
 
         if self.DEBUG:
-            print('')
+            print('DEBUG(SymbolTable): INITIALIZED SYMBOL TABLES')
 
 
     def startSubroutine(self):
@@ -39,7 +39,7 @@ class SymbolTable():
         self.counts['VAR'] = 0
 
         if self.DEBUG:
-            print('NOTE: Reset subroutine symbol table')
+            print('DEBUG(SymbolTable): Reset subroutine symbol table')
 
 
     def define(self, aName, aType, aKind):
@@ -58,7 +58,7 @@ class SymbolTable():
         index = self.counts[aKind]
         table[aName] = (aType, aKind, index)
         if self.DEBUG:
-            print('DEFINED SYMBOL {}: {}'.format(aName, table[aName]))
+            print('DEBUG(SymbolTable): DEFINED SYMBOL \'{}\': {}'.format(aName, table[aName]))
         self.counts[aKind] += 1
 
         # Return the index
@@ -84,6 +84,10 @@ class SymbolTable():
         else:
             return None
 
+        # DEBUG
+        if self.DEBUG:
+            print('DEBUG(SymbolTable): KIND OF \'{}\': {}'.format(aName, tup[1]))
+        
         # Extract the kind from the tuple
         return tup[1]
 
@@ -100,6 +104,10 @@ class SymbolTable():
         else:
             return None
 
+        # DEBUG
+        if self.DEBUG:
+            print('DEBUG(SymbolTable): TYPE OF \'{}\': {}'.format(aName, tup[0]))
+        
         # Extract the type from the tuple
         return tup[0]
 
@@ -116,5 +124,9 @@ class SymbolTable():
         else:
             return None
 
+        # DEBUG
+        if self.DEBUG:
+            print('DEBUG(SymbolTable): INDEX OF \'{}\': {}'.format(aName, tup[2]))
+        
         # Extract the index from the tuple
         return tup[2]
