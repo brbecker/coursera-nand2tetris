@@ -22,6 +22,9 @@ class CompilationEngine:
         # Indentation level
         self.indentLevel = 0
 
+        # Initialize the symbol table
+        self.symtab = SymbolTable(DEBUG=DEBUG)
+
     def compileClass(self):
         '''
         Compiles a complete class.
@@ -445,7 +448,7 @@ class CompilationEngine:
         # Return the actual token type and value
         return (tType, tVal)
 
-    def emit(self, token=None, category='', state='', varType='', xml=None):
+    def emit(self, token=None, category=None, state=None, varType=None, xml=None):
         '''
         Emit the provided XML or token as XML to the xmlFile.
         Will indent based on the current indentLevel.
@@ -453,13 +456,28 @@ class CompilationEngine:
         # If XML code not provided, create it from the token type and value
         if not xml:
             (tokenType, tokenVal) = token
+
+            # Handle symbol table additions/lookups
+            index = None
+            if state and category in ['STATIC', 'FIELD', 'ARG', 'VAR']:
+                if state == 'DEFINE':
+                    index = self.symtab.define(tokenVal, varType, category)
+                elif state == 'USE':
+                    index = self.symtab.indexOf(tokenVal)
+                else:
+                    raise ValueError('Unknown STATE: ' + state)
+
+            # Define additional output fields
             fields = ''
-            if category:
-                fields += ' category=' + category
-            if state:
-                fields += ' state=' + state
-            if varType:
-                fields += ' varType=' + varType
+            if category is not None:
+                fields += ' category={}'.format(category)
+            if state is not None:
+                fields += ' state={}'.format(state)
+            if varType is not None:
+                fields += ' varType={}'.format(varType)
+            if index is not None:
+                fields += ' index={}'.format(index)
+
             xml = '<{0}{2}>{1}</{0}>'.format(tokenType, self.xmlProtect(tokenVal), fields)
 
         else:
@@ -477,7 +495,7 @@ class CompilationEngine:
         if '</' not in xml:
             self.indentLevel = self.indentLevel + 1
 
-    def eatAndEmit(self, tokenType, tokenVals=None, category='', state='', varType=''):
+    def eatAndEmit(self, tokenType, tokenVals=None, category=None, state=None, varType=None):
         '''
         Shorthand for common pattern of eat and emit. Returns the token eaten.
         '''
