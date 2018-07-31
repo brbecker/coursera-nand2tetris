@@ -23,25 +23,14 @@ if DEBUG: print('jackFiles:\t' + str(jackFiles))
 
 # Main Loop
 for jackFile in jackFiles:
-    # Generate the output XML file name
-    xmlFile = jackFile.replace(".jack", ".xml")
-    if DEBUG: print('jackFile: {:<30}xmlFile: {}'.format(jackFile, xmlFile))
+    # Generate the output VM file name
+    xmlFile = jackFile.replace('.jack', '.xml')
+    vmFile = jackFile.replace('.jack', '.vm')
+    if DEBUG: print('jackFile: {:<30}xmlFile: {} vmFile: {}'.format(jackFile, xmlFile, vmFile))
 
-    compEngine = CompilationEngine(jackFile, xmlFile, DEBUG)
+    compEngine = CompilationEngine(jackFile=jackFile,
+                                   xmlFile=xmlFile,
+                                   vmFile=vmFile,
+                                   DEBUG=DEBUG)
     compEngine.compileClass()
 
-    # tokenizer = JackTokenizer(jackFile)#, xmlFile, DEBUG)
-
-    # while tokenizer.hasMoreTokens():
-    #     tokenizer.advance()
-    #     tokenType = tokenizer.tokenType()
-    #     if tokenType == JackTokenizer.KEYWORD:
-    #         tokenVal = tokenizer.keyWord()
-    #     elif tokenType == JackTokenizer.SYMBOL:
-    #         tokenVal = tokenizer.symbol()
-    #     elif tokenType == JackTokenizer.IDENTIFIER:
-    #         tokenVal = tokenizer.identifier()
-    #     elif tokenType == JackTokenizer.INT_CONST:
-    #         tokenVal = tokenizer.intVal()
-    #     elif tokenType == JackTokenizer.STRING_CONST:
-    #         tokenVal = tokenizer.stringVal()

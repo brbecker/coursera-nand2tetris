@@ -1,5 +1,6 @@
 from JackTokenizer import JackTokenizer
 from SymbolTable import SymbolTable
+from VMWriter import VMWriter
 
 
 class CompilationEngine:
@@ -10,7 +11,7 @@ class CompilationEngine:
 
     INDENT = '  '
 
-    def __init__(self, jackFile, xmlFile, DEBUG=False):
+    def __init__(self, jackFile, xmlFile, vmFile, DEBUG=False):
         '''
         Creates a new compilation engine with the given input and output. The
         next routine called must be compileClass().
@@ -24,6 +25,9 @@ class CompilationEngine:
 
         # Initialize the symbol table
         self.symtab = SymbolTable(DEBUG=True)
+
+        # Initialize the VM writer
+        self.writer = VMWriter(vmFile, DEBUG=True)
 
     def compileClass(self):
         '''
