@@ -110,6 +110,7 @@ class VMWriter():
         '''
         if self.DEBUG:
             print('DEBUG(VMWriter): call {} {}'.format(name, nArgs))
+        self.file.write('call {} {}\n'.format(name, nArgs))
 
 
     def writeFunction(self, name, nLocals):
@@ -137,3 +138,12 @@ class VMWriter():
 
         if self.DEBUG:
             print('DEBUG(VMWriter): Closed {}'.format(self.vmFile))
+
+
+    def writeComment(self, comment):
+        '''
+        Writes a VM comment.
+        '''
+        # if self.DEBUG:
+        #     print('DEBUG(VMWriter): Writing comment \'{}\''.format(comment))
+        self.file.write('# {}'.format(comment))

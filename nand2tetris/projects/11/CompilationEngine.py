@@ -11,13 +11,12 @@ class CompilationEngine:
 
     INDENT = '  '
 
-    def __init__(self, jackFile, xmlFile, vmFile, DEBUG=False):
+    def __init__(self, jackFile, vmFile, DEBUG=False):
         '''
         Creates a new compilation engine with the given input and output. The
         next routine called must be compileClass().
         '''
         self.tokenizer = JackTokenizer(jackFile)  # , DEBUG=DEBUG)
-        self.xmlFile = open(xmlFile, mode='w')
         self.DEBUG = DEBUG
 
         # Indentation level
@@ -514,7 +513,7 @@ class CompilationEngine:
 
         # Output the XML, indented to the current level
         output = '{}{}\n'.format(self.INDENT * self.indentLevel, xml)
-        self.xmlFile.write(output)
+        self.writer.writeComment(output)
         if self.DEBUG:
             print(output, end='')
 

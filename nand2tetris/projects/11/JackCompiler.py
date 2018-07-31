@@ -24,12 +24,10 @@ if DEBUG: print('jackFiles:\t' + str(jackFiles))
 # Main Loop
 for jackFile in jackFiles:
     # Generate the output VM file name
-    xmlFile = jackFile.replace('.jack', '.xml')
     vmFile = jackFile.replace('.jack', '.vm')
-    if DEBUG: print('jackFile: {:<30}xmlFile: {} vmFile: {}'.format(jackFile, xmlFile, vmFile))
+    if DEBUG: print('jackFile: {:<30}vmFile: {}'.format(jackFile, vmFile))
 
     compEngine = CompilationEngine(jackFile=jackFile,
-                                   xmlFile=xmlFile,
                                    vmFile=vmFile,
                                    DEBUG=DEBUG)
     compEngine.compileClass()
