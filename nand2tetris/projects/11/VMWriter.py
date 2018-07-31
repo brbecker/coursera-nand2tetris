@@ -49,9 +49,35 @@ class VMWriter():
         '''
         Writes a VM arithmetic command.
         '''
-        # ['+', '-', '*', '/', '&', '|', '<', '>', '=']
+        # ['+', '-', '*', '/', '&', '|', '<', '>', '=', 'U-', 'U~']
+        # U- and U~ are the unary operators.
         if self.DEBUG:
             print('DEBUG(VMWriter): arithmetic {}'.format(command))
+
+        if command == '+':
+            self.file.write('add\n')
+        elif command == '-':
+            self.file.write('sub\n')
+        elif command == '*':
+            self.writeCall('Math.multiply', 2)
+        elif command == '/':
+            self.writeCall('Math.divide', 2)
+        elif command == '&':
+            self.file.write('and\n')
+        elif command == '|':
+            self.file.write('or\n')
+        elif command == '<':
+            self.file.write('lt\n')
+        elif command == '>':
+            self.file.write('gt\n')
+        elif command == '=':
+            self.file.write('eq\n')
+        elif command == 'U-':
+            self.file.write('neg\n')
+        elif command == 'U~':
+            self.file.write('not\n')
+        else:
+            raise NotImplementedError('Unrecognized arithmetic operator: ' + command)
 
 
     def writeLabel(self, label):

@@ -347,8 +347,9 @@ class CompilationEngine:
         t = self.tokenizer
         ops = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
         while t.tokenType() == 'symbol' and t.symbol() in ops:
-            self.eatAndEmit('symbol', ops)
+            (_, op) = self.eatAndEmit('symbol', ops)
             self.compileTerm()
+            self.writer.writeArithmetic(op)
 
         self.emit(xml='</expression>')
 
@@ -370,7 +371,8 @@ class CompilationEngine:
 
         # Integer constant
         if tType == 'integerConstant':
-            self.eatAndEmit('integerConstant')
+            (_, value) = self.eatAndEmit('integerConstant')
+            self.writer.writePush('CONST', value)
         # String constant
         elif tType == 'stringConstant':
             self.eatAndEmit('stringConstant')
@@ -406,8 +408,10 @@ class CompilationEngine:
             self.eatAndEmit('symbol', [')'])
         # Unary op and term
         elif tType == 'symbol' and t.symbol() in ['-', '~']:
-            self.eatAndEmit('symbol', ['-', '~'])
+            (_, op) = self.eatAndEmit('symbol', ['-', '~'])
             self.compileTerm()
+            # Mark as unary to get right version of '-'
+            self.writer.writeArithmetic('U' + op)
         else:
             # Not a term
             raise SyntaxError('Expected term, found {}.'.format(t.currentToken))
