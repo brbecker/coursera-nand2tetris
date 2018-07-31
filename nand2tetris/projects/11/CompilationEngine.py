@@ -252,7 +252,7 @@ class CompilationEngine:
         '''
         self.emit(xml='<letStatement>')
         self.eatAndEmit('keyword', ['let'])
-        self.eatAndEmit('identifier', category='TBD LET', state='USE')
+        self.eatAndEmit('identifier', category='LET', state='USE')
 
         # Check for array qualifier
         t = self.tokenizer
@@ -362,7 +362,7 @@ class CompilationEngine:
             self.eatAndEmit('keyword', ['true', 'false', 'null', 'this'])
         # Identifier (varName, or array name, or subroutine call)
         elif tType == 'identifier':
-            self.emit(token=self.eat('identifier'), category='TBD TERM CLASS OR VAR', state='USE')
+            self.eatAndEmit('identifier', category='TERM', state='USE')
             if t.tokenType() == 'symbol':
                 symbol = t.symbol()
                 if symbol == '[':
@@ -462,13 +462,16 @@ class CompilationEngine:
 
             # Handle symbol table additions/lookups
             index = None
-            if state and category in ['STATIC', 'FIELD', 'ARG', 'VAR']:
-                if state == 'DEFINE':
-                    index = self.symtab.define(tokenVal, varType, category)
-                elif state == 'USE':
+            if state  == 'DEFINE' and category in ['STATIC', 'FIELD', 'ARG', 'VAR']:
+                index = self.symtab.define(tokenVal, varType, category)
+            
+            if state == 'USE' and category in ['LET', 'TERM']:
+                category = self.symtab.kindOf(tokenVal)
+                if category:
+                    varType = self.symtab.typeOf(tokenVal)
                     index = self.symtab.indexOf(tokenVal)
                 else:
-                    raise ValueError('Unknown STATE: ' + state)
+                    category='CLASS OR SUBROUTINE'
 
             # Define additional output fields
             fields = ''
