@@ -47,7 +47,7 @@ class CompilationEngine:
             return
 
         self.eatAndEmit('keyword', ['class'])
-        self.eatAndEmit('identifier', category='CLASS', state='DEFINE')
+        (_, self.thisClass) = self.eatAndEmit('identifier', category='CLASS', state='DEFINE')
         self.eatAndEmit('symbol', ['{'])
 
         # Expect zero or more classVarDecs
@@ -66,6 +66,9 @@ class CompilationEngine:
         # Should not be any more input
         if self.tokenizer.hasMoreTokens():
             raise SyntaxError('Token after end of class: ' + self.tokenizer.currentToken)
+        
+        # Close the VMWriter
+        self.writer.close()
 
     def compileClassVarDec(self):
         '''
@@ -109,8 +112,9 @@ class CompilationEngine:
         self.emit(xml='<subroutineDec>')
         self.eatAndEmit('keyword', ['constructor', 'function', 'method'])
 
-        # Reset the subroutine symbol table
+        # Reset the subroutine symbol table, seeded with 'this'
         self.symtab.startSubroutine()
+        self.symtab.define('this', self.thisClass, 'ARG')
 
         # Expect 'void' or a type: one of the keywords 'int', 'char', or
         # 'boolean', or a className (identifier).
@@ -121,7 +125,7 @@ class CompilationEngine:
         else:
             self.eatAndEmit('identifier', category='CLASS', state='USE')
 
-        self.eatAndEmit('identifier', category='SUBROUTINE', state='DEFINE')
+        (_, functionName) = self.eatAndEmit('identifier', category='SUBROUTINE', state='DEFINE')
 
         self.eatAndEmit('symbol', ['('])
         self.compileParameterList()
@@ -129,10 +133,19 @@ class CompilationEngine:
         self.emit(xml='<subroutineBody>')
         self.eatAndEmit('symbol', ['{'])
 
-        # Expect varDec*
+        # Expect varDec*. Count the number of local variables.
+        nLocals = 0
         while t.tokenType() == 'keyword' and t.keyWord() == 'var':
             self.compileVarDec()
+            nLocals += 1
 
+        # Generate the VM code to start the function and initialize 'this'.
+        self.writer.writeFunction('{}.{}'.format(self.thisClass, functionName),
+                                  nLocals)
+        self.writer.writePush('ARG', 0)
+        self.writer.writePop('POINTER', 0)
+
+        # Compile the code of the function
         self.compileStatements()
         self.eatAndEmit('symbol', ['}'])
         self.emit(xml='</subroutineBody>')
