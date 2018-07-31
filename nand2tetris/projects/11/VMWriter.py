@@ -49,41 +49,49 @@ class VMWriter():
         '''
         Writes a VM arithmetic command.
         '''
-        pass
+        # ['+', '-', '*', '/', '&', '|', '<', '>', '=']
+        if self.DEBUG:
+            print('DEBUG(VMWriter): arithmetic {}'.format(command))
 
 
     def writeLabel(self, label):
         '''
         Writes a VM label command.
         '''
-        pass
+        if self.DEBUG:
+            print('DEBUG(VMWriter): label {}'.format(label))
 
 
     def writeGoto(self, label):
         '''
         Writes a VM goto command.
         '''
-        pass
+        if self.DEBUG:
+            print('DEBUG(VMWriter): goto {}'.format(label))
 
 
     def writeIf(self, label):
         '''
         Writes a VM if-goto command.
         '''
-        pass
+        if self.DEBUG:
+            print('DEBUG(VMWriter): if {}'.format(label))
 
 
     def writeCall(self, name, nArgs):
         '''
         Writes a VM call command.
         '''
-        pass
+        if self.DEBUG:
+            print('DEBUG(VMWriter): call {} {}'.format(name, nArgs))
 
 
     def writeFunction(self, name, nLocals):
         '''
         Writes a VM function command.
         '''
+        if self.DEBUG:
+            print('DEBUG(VMWriter): function {} {}'.format(name, nLocals))
         self.file.write('function {} {}\n'.format(name, nLocals))
 
 
@@ -91,7 +99,8 @@ class VMWriter():
         '''
         Writes a VM return command.
         '''
-        pass
+        if self.DEBUG:
+            print('DEBUG(VMWriter): return')
 
 
     def close(self):
