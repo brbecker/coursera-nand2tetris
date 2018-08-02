@@ -138,11 +138,9 @@ class CompilationEngine:
             self.compileVarDec()
             nLocals += 1
 
-        # Generate the VM code to start the function and initialize 'this'.
+        # Generate the VM code to start the function.
         self.writer.writeFunction('{}.{}'.format(self.thisClass, functionName),
                                   nLocals)
-        self.writer.writePush('ARG', 0)
-        self.writer.writePop('POINTER', 0)
 
         # Compile the code of the function
         self.compileStatements()
@@ -248,6 +246,7 @@ class CompilationEngine:
 
         # Eat the identifier. Can't emit until we know if this is a class or a subroutine.
         token = self.eat('identifier')
+        (_, subroutine) = token
 
         # Check for a '.', which indicates a method call
         t = self.tokenizer
@@ -255,14 +254,23 @@ class CompilationEngine:
             self.emit(token=token, category='CLASS', state='USE')   # Previous token was a class
             self.eatAndEmit('symbol', ['.'])
             token = self.eat('identifier')
-
-        self.emit(token=token, category='SUBROUTINE', state='USE')
+            self.emit(token=token, category='METHOD', state='USE')
+            (_, method) = token
+            subroutine += '.' + method
+        else:
+            self.emit(token=token, category='SUBROUTINE', state='USE')
 
         self.eatAndEmit('symbol', ['('])
-        self.compileExpressionList()
+        nArgs = self.compileExpressionList()
         self.eatAndEmit('symbol', [')'])
         self.eatAndEmit('symbol', [';'])
+
+        # Call the desired subroutine and consume the returned value
+        self.writer.writeCall(subroutine, nArgs)
+        self.writer.writePop('TEMP', 0)
+
         self.emit(xml='</doStatement>')
+
 
     def compileLet(self):
         '''
@@ -426,6 +434,7 @@ class CompilationEngine:
     def compileExpressionList(self):
         '''
         Compiles a (possibly empty) comma-separated list of expressions.
+        Returns the number of expressions compiled.
         '''
         self.emit(xml='<expressionList>')
 
@@ -433,8 +442,12 @@ class CompilationEngine:
         t = self.tokenizer
         tType = t.tokenType()
 
+        # Count the expressions in the list
+        nExpressions = 0
+
         # Closing parenthesis ends the list
         while not (tType == 'symbol' and t.symbol() == ')'):
+            nExpressions += 1
             self.compileExpression()
 
             # Expect an optional ','
@@ -445,6 +458,8 @@ class CompilationEngine:
             tType = t.tokenType()
 
         self.emit(xml='</expressionList>')
+
+        return nExpressions
 
     def eat(self, tokenType, tokenVals=None):
         '''
