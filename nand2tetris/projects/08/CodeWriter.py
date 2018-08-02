@@ -81,11 +81,11 @@ class CodeWriter:
 
         # Error checking
         if ctype == Parser.C_POP and segment == 'constant':
-            raise ValueError('pop not supported for constant segment: ' + cmdtext)
+            raise ValueError('pop not supported for constant segment')
         if segment == 'pointer' and int(index) not in range(0, 2):
-            raise ValueError('pointer segment only supports indexes 0 and 1: ' + cmdtext)
+            raise ValueError('pointer segment only supports indexes 0 and 1')
         if segment == 'temp' and int(index) not in range(0, 8):
-            raise ValueError('temp segment only supports indexes from 0 to 7: ' + cmdtext)
+            raise ValueError('temp segment only supports indexes from 0 to 7')
 
         # Calculate the RAM address we really want
 
