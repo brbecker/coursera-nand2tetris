@@ -418,26 +418,46 @@ class CompilationEngine:
                 raise NotImplementedError("TERM constant this")
         # Identifier (varName, or array name, or subroutine call)
         elif tType == "identifier":
-            self.eatAndEmit("identifier", category="TERM", state="USE")
+            (_, ident) = self.eatAndEmit("identifier", category="TERM", state="USE")
             if t.tokenType() == "symbol":
                 symbol = t.symbol()
                 if symbol == "[":
                     # Array reference
+                    # ident is the array name
                     self.eatAndEmit("symbol", ["["])
                     self.compileExpression()
                     self.eatAndEmit("symbol", ["]"])
                 elif symbol == "(":
                     # Subroutine call
+                    # ident is the subroutine.
                     self.eatAndEmit("symbol", ["("])
-                    self.compileExpressionList()
+                    nArgs = self.compileExpressionList()
                     self.eatAndEmit("symbol", [")"])
+                    self.writer.writeCall(ident, nArgs)
                 elif symbol == ".":
-                    # Method call
+                    # Method call.
+                    # ident is the class name (static method) or the object which will be argument 0 (this).
+
+                    # Look up the object's type in the symbol table. If not found, then it is a class name and there is no object to be "this".
+                    objType = self.symtab.typeOf(ident)
+                    if objType is not None:
+                        # Push this onto stack as argument 0
+                        # TODO: How?
+                        addSelf = 1
+                        raise NotImplementedError('Need to push this onto stack')
+                    else:
+                        # ident is the class name, so use it
+                        objType = ident
+                        addSelf = 0
+
                     self.eatAndEmit("symbol", ["."])
-                    self.eatAndEmit("identifier", category="SUBROUTINE", state="USE")
+                    (_, method) = self.eatAndEmit(
+                        "identifier", category="SUBROUTINE", state="USE"
+                    )
                     self.eatAndEmit("symbol", ["("])
-                    self.compileExpressionList()
+                    nArgs = self.compileExpressionList()
                     self.eatAndEmit("symbol", [")"])
+                    self.writer.writeCall(objType + "." + method, nArgs + addSelf)
         # Sub-expression
         elif tType == "symbol" and t.symbol() == "(":
             self.eatAndEmit("symbol", ["("])
