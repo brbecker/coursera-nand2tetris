@@ -128,6 +128,7 @@ class VMWriter():
         '''
         if self.DEBUG:
             print('DEBUG(VMWriter): return')
+        self.file.write('return\n')
 
 
     def close(self):
@@ -146,4 +147,4 @@ class VMWriter():
         '''
         # if self.DEBUG:
         #     print('DEBUG(VMWriter): Writing comment \'{}\''.format(comment))
-        self.file.write('# {}'.format(comment))
+        self.file.write('// {}'.format(comment))

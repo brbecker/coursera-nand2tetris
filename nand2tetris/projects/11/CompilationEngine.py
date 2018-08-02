@@ -150,6 +150,7 @@ class CompilationEngine:
         self.emit(xml='</subroutineBody>')
         self.emit(xml='</subroutineDec>')
 
+
     def compileParameterList(self):
         '''
         Compiles a (possibly empty) parameter list, not including the
@@ -237,6 +238,7 @@ class CompilationEngine:
 
         self.emit(xml='</statements>')
 
+
     def compileDo(self):
         '''
         Compiles a do statement.
@@ -308,7 +310,11 @@ class CompilationEngine:
         if not (t.tokenType() == 'symbol' and t.symbol() == ';'):
             # Expect an expression
             self.compileExpression()
+        else:
+            # void function, so force a 0 onto the stack to return
+            self.writer.writePush('CONST', 0)
 
+        self.writer.writeReturn()
         self.eatAndEmit('symbol', [';'])
         self.emit(xml='</returnStatement>')
 
