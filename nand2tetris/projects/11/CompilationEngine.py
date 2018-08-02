@@ -259,24 +259,38 @@ class CompilationEngine:
 
         # Eat the identifier. Can't emit until we know if this is a class or a subroutine.
         token = self.eat("identifier")
-        (_, subroutine) = token
+        (_, ident) = token
+
+        nArgs = 0
 
         # Check for a '.', which indicates a method call
         t = self.tokenizer
         if t.tokenType() == "symbol" and t.symbol() == ".":
-            self.emit(
-                token=token, category="CLASS", state="USE"
-            )  # Previous token was a class
             self.eatAndEmit("symbol", ["."])
-            token = self.eat("identifier")
-            self.emit(token=token, category="METHOD", state="USE")
-            (_, method) = token
+            # Previous token was an object or a class. Check symbol table.
+            objType = self.symtab.typeOf(ident)
+            if objType:
+                # ident is an object, so method is objType.method, and the object must be loaded into this as argument 0
+                self.emit(token=token, category=self.symtab.kindOf(ident), state="USE")
+                subroutine = objType
+                nArgs = 1
+                # TODO
+                raise NotImplementedError("this")
+            else:
+                # ident is a class, so method is ident.method and there is no this
+                self.emit(token=token, category="CLASS", state="USE")
+                subroutine = ident
+
+            methodToken = self.eat("identifier")
+            (_, method) = methodToken
+            self.emit(token=methodToken, category="METHOD", state="USE")
             subroutine += "." + method
         else:
             self.emit(token=token, category="SUBROUTINE", state="USE")
+            subroutine = ident
 
         self.eatAndEmit("symbol", ["("])
-        nArgs = self.compileExpressionList()
+        nArgs += self.compileExpressionList()
         self.eatAndEmit("symbol", [")"])
         self.eatAndEmit("symbol", [";"])
 
