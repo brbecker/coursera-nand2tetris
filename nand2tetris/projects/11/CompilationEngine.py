@@ -391,7 +391,17 @@ class CompilationEngine:
             self.eatAndEmit('stringConstant')
         # Keyword constant
         elif tType == 'keyword' and t.keyWord() in ['true', 'false', 'null', 'this']:
-            self.eatAndEmit('keyword', ['true', 'false', 'null', 'this'])
+            (_, kw) = self.eatAndEmit('keyword', ['true', 'false', 'null', 'this'])
+            if kw in ['null', 'false']:
+                # Map to 0
+                self.writer.writePush('CONST', 0)
+            elif kw == 'true':
+                # Map to -1
+                self.writer.writePush('CONST', 1)
+                self.writer.writeArithmetic('U-')   # NEG
+            else:
+                # TODO: this
+                raise NotImplementedError('TERM constant this')
         # Identifier (varName, or array name, or subroutine call)
         elif tType == 'identifier':
             self.eatAndEmit('identifier', category='TERM', state='USE')
