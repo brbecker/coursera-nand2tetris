@@ -149,8 +149,7 @@ class CompilationEngine:
         # Expect varDec*. Count the number of local variables.
         nLocals = 0
         while t.tokenType() == "keyword" and t.keyWord() == "var":
-            self.compileVarDec()
-            nLocals += 1
+            nLocals += self.compileVarDec()
 
         # Generate the VM code to start the function.
         self.writer.writeFunction("{}.{}".format(self.thisClass, functionName), nLocals)
@@ -217,17 +216,21 @@ class CompilationEngine:
         else:
             (_, varType) = self.eatAndEmit("identifier", category="CLASS", state="USE")
 
-        self.eatAndEmit("identifier", category="VAR", state="DEFINE", varType=varType)
+        (_, var) = self.eatAndEmit("identifier", category="VAR", state="DEFINE", varType=varType)
+        nVars = 1
 
         # Expect an optional list of identifiers.
         while t.tokenType() == "symbol" and t.symbol() == ",":
             self.eatAndEmit("symbol", [","])
-            self.eatAndEmit(
+            (_, var) = self.eatAndEmit(
                 "identifier", category="VAR", state="DEFINE", varType=varType
             )
+            nVars += 1
 
         self.eatAndEmit("symbol", [";"])
         self.emit(xml="</varDec>")
+
+        return nVars
 
     def compileStatements(self):
         """
@@ -344,21 +347,21 @@ class CompilationEngine:
         
         whileInstance = self.whileCounter
         self.whileCounter += 1
-        self.writer.writeLabel("while{}.L1".format(whileInstance))
+        self.writer.writeLabel("while.{}.{}.L1".format(self.thisClass, whileInstance))
 
         self.eatAndEmit("symbol", ["("])
         self.compileExpression()
         self.eatAndEmit("symbol", [")"])
 
         self.writer.writeArithmetic("U~")
-        self.writer.writeIf("while{}.L2".format(whileInstance))
+        self.writer.writeIf("while.{}.{}.L2".format(self.thisClass, whileInstance))
 
         self.eatAndEmit("symbol", ["{"])
         self.compileStatements()
         self.eatAndEmit("symbol", ["}"])
 
-        self.writer.writeGoto("while{}.L1".format(whileInstance))
-        self.writer.writeLabel("while{}.L2".format(whileInstance))
+        self.writer.writeGoto("while.{}.{}.L1".format(self.thisClass, whileInstance))
+        self.writer.writeLabel("while.{}.{}.L2".format(self.thisClass, whileInstance))
 
         self.emit(xml="</whileStatement>")
 
@@ -392,9 +395,18 @@ class CompilationEngine:
         self.eatAndEmit("symbol", ["("])
         self.compileExpression()
         self.eatAndEmit("symbol", [")"])
+
+        self.writer.writeArithmetic("U~")
+        ifInstance = self.ifCounter
+        self.ifCounter += 1
+        self.writer.writeIf("if.{}.{}.L1".format(self.thisClass, ifInstance))
+
         self.eatAndEmit("symbol", ["{"])
         self.compileStatements()
         self.eatAndEmit("symbol", ["}"])
+
+        self.writer.writeGoto("if.{}.{}.L2".format(self.thisClass, ifInstance))
+        self.writer.writeLabel("if.{}.{}.L1".format(self.thisClass, ifInstance))
 
         t = self.tokenizer
         if t.tokenType() == "keyword" and t.keyWord() == "else":
@@ -402,6 +414,8 @@ class CompilationEngine:
             self.eatAndEmit("symbol", ["{"])
             self.compileStatements()
             self.eatAndEmit("symbol", ["}"])
+
+        self.writer.writeLabel("if.{}.{}.L2".format(self.thisClass, ifInstance))
 
         self.emit(xml="</ifStatement>")
 
