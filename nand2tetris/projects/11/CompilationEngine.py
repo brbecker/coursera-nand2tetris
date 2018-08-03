@@ -115,11 +115,14 @@ class CompilationEngine:
         'function', or 'method'.
         """
         self.emit(xml="<subroutineDec>")
-        self.eatAndEmit("keyword", ["constructor", "function", "method"])
+        (_, kw) = self.eatAndEmit("keyword", ["constructor", "function", "method"])
 
-        # Reset the subroutine symbol table, seeded with 'this'
+        # Reset the subroutine symbol table
         self.symtab.startSubroutine()
-        self.symtab.define("this", self.thisClass, "ARG")
+
+        # If this is a method, seed the symbol table with "this"
+        if kw == "method":
+            self.symtab.define("this", self.thisClass, "ARG")
 
         # Expect 'void' or a type: one of the keywords 'int', 'char', or
         # 'boolean', or a className (identifier).
@@ -306,11 +309,16 @@ class CompilationEngine:
         """
         self.emit(xml="<letStatement>")
         self.eatAndEmit("keyword", ["let"])
-        self.eatAndEmit("identifier", category="LET", state="USE")
+        (_, varName) = self.eatAndEmit("identifier", category="LET", state="USE")
+
+        # Look up the variable in the symbol table
+        varKind = self.symtab.kindOf(varName)
+        varIndex = self.symtab.indexOf(varName)
 
         # Check for array qualifier
         t = self.tokenizer
         if t.tokenType() == "symbol" and t.symbol() == "[":
+            # TODO
             self.eatAndEmit("symbol", "[")
             self.compileExpression()
             self.eatAndEmit("symbol", ["]"])
@@ -318,6 +326,10 @@ class CompilationEngine:
         self.eatAndEmit("symbol", ["="])
         self.compileExpression()
         self.eatAndEmit("symbol", [";"])
+
+        # Value to save is at the top of the stack.
+        self.writer.writePop(varKind, varIndex)
+
         self.emit(xml="</letStatement>")
 
     def compileWhile(self):
@@ -458,7 +470,7 @@ class CompilationEngine:
                         # Push this onto stack as argument 0
                         # TODO: How?
                         addSelf = 1
-                        raise NotImplementedError('Need to push this onto stack')
+                        raise NotImplementedError("Need to push this onto stack")
                     else:
                         # ident is the class name, so use it
                         objType = ident
@@ -472,6 +484,11 @@ class CompilationEngine:
                     nArgs = self.compileExpressionList()
                     self.eatAndEmit("symbol", [")"])
                     self.writer.writeCall(objType + "." + method, nArgs + addSelf)
+                else:
+                    # Next token not a symbol, so ident is a simple variable identifier.
+                    varKind = self.symtab.kindOf(ident)
+                    varIndex = self.symtab.indexOf(ident)
+                    self.writer.writePush(varKind, varIndex)
         # Sub-expression
         elif tType == "symbol" and t.symbol() == "(":
             self.eatAndEmit("symbol", ["("])

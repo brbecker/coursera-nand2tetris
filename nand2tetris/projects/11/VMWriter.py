@@ -7,12 +7,14 @@ class VMWriter:
     segments = {
         "ARG": "argument",
         "CONST": "constant",
+        "FIELD": "this",
         "LOCAL": "local",
         "POINTER": "pointer",
         "STATIC": "static",
         "TEMP": "temp",
         "THAT": "that",
         "THIS": "this",
+        "VAR": "local",
     }
 
     def __init__(self, vmFile, DEBUG=False):
