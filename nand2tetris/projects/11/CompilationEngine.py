@@ -22,6 +22,9 @@ class CompilationEngine:
         # Indentation level
         self.indentLevel = 0
 
+        # Counters for while loops and if statements
+        self.whileCounter = self.ifCounter = 0
+
         # Initialize the symbol table
         self.symtab = SymbolTable(DEBUG=True)
 
@@ -338,12 +341,25 @@ class CompilationEngine:
         """
         self.emit(xml="<whileStatement>")
         self.eatAndEmit("keyword", ["while"])
+        
+        whileInstance = self.whileCounter
+        self.whileCounter += 1
+        self.writer.writeLabel("while{}.L1".format(whileInstance))
+
         self.eatAndEmit("symbol", ["("])
         self.compileExpression()
         self.eatAndEmit("symbol", [")"])
+
+        self.writer.writeArithmetic("U~")
+        self.writer.writeIf("while{}.L2".format(whileInstance))
+
         self.eatAndEmit("symbol", ["{"])
         self.compileStatements()
         self.eatAndEmit("symbol", ["}"])
+
+        self.writer.writeGoto("while{}.L1".format(whileInstance))
+        self.writer.writeLabel("while{}.L2".format(whileInstance))
+
         self.emit(xml="</whileStatement>")
 
     def compileReturn(self):

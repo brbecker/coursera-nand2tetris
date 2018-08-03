@@ -84,6 +84,7 @@ class VMWriter:
         """
         if self.DEBUG:
             print("DEBUG(VMWriter): label {}".format(label))
+        self.file.write("label {}\n".format(label))
 
     def writeGoto(self, label):
         """
@@ -91,6 +92,7 @@ class VMWriter:
         """
         if self.DEBUG:
             print("DEBUG(VMWriter): goto {}".format(label))
+        self.file.write("goto {}\n".format(label))
 
     def writeIf(self, label):
         """
@@ -98,6 +100,7 @@ class VMWriter:
         """
         if self.DEBUG:
             print("DEBUG(VMWriter): if {}".format(label))
+        self.file.write("if-goto {}\n".format(label))
 
     def writeCall(self, name, nArgs):
         """
