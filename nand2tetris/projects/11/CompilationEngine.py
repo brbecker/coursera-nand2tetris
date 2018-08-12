@@ -216,13 +216,13 @@ class CompilationEngine:
         else:
             (_, varType) = self.eatAndEmit("identifier", category="CLASS", state="USE")
 
-        (_, var) = self.eatAndEmit("identifier", category="VAR", state="DEFINE", varType=varType)
+        self.eatAndEmit("identifier", category="VAR", state="DEFINE", varType=varType)
         nVars = 1
 
         # Expect an optional list of identifiers.
         while t.tokenType() == "symbol" and t.symbol() == ",":
             self.eatAndEmit("symbol", [","])
-            (_, var) = self.eatAndEmit(
+            self.eatAndEmit(
                 "identifier", category="VAR", state="DEFINE", varType=varType
             )
             nVars += 1
