@@ -377,21 +377,21 @@ class CompilationEngine:
         
         whileInstance = self.whileCounter
         self.whileCounter += 1
-        self.writer.writeLabel("while.{}.{}.L1".format(self.thisClass, whileInstance))
+        self.writer.writeLabel("WHILE.{}.{}.EXP".format(self.thisClass, whileInstance))
 
         self.eatAndEmit("symbol", ["("])
         self.compileExpression()
         self.eatAndEmit("symbol", [")"])
 
         self.writer.writeArithmetic("U~")
-        self.writer.writeIf("while.{}.{}.L2".format(self.thisClass, whileInstance))
+        self.writer.writeIf("WHILE.{}.{}.EXIT".format(self.thisClass, whileInstance))
 
         self.eatAndEmit("symbol", ["{"])
         self.compileStatements()
         self.eatAndEmit("symbol", ["}"])
 
-        self.writer.writeGoto("while.{}.{}.L1".format(self.thisClass, whileInstance))
-        self.writer.writeLabel("while.{}.{}.L2".format(self.thisClass, whileInstance))
+        self.writer.writeGoto("WHILE.{}.{}.EXP".format(self.thisClass, whileInstance))
+        self.writer.writeLabel("WHILE.{}.{}.EXIT".format(self.thisClass, whileInstance))
 
         self.emit(xml="</whileStatement>")
 
@@ -429,14 +429,14 @@ class CompilationEngine:
         self.writer.writeArithmetic("U~")
         ifInstance = self.ifCounter
         self.ifCounter += 1
-        self.writer.writeIf("if.{}.{}.L1".format(self.thisClass, ifInstance))
+        self.writer.writeIf("IF.{}.{}.ELSE".format(self.thisClass, ifInstance))
 
         self.eatAndEmit("symbol", ["{"])
         self.compileStatements()
         self.eatAndEmit("symbol", ["}"])
 
-        self.writer.writeGoto("if.{}.{}.L2".format(self.thisClass, ifInstance))
-        self.writer.writeLabel("if.{}.{}.L1".format(self.thisClass, ifInstance))
+        self.writer.writeGoto("IF.{}.{}.EXIT".format(self.thisClass, ifInstance))
+        self.writer.writeLabel("IF.{}.{}.ELSE".format(self.thisClass, ifInstance))
 
         t = self.tokenizer
         if t.tokenType() == "keyword" and t.keyWord() == "else":
@@ -445,7 +445,7 @@ class CompilationEngine:
             self.compileStatements()
             self.eatAndEmit("symbol", ["}"])
 
-        self.writer.writeLabel("if.{}.{}.L2".format(self.thisClass, ifInstance))
+        self.writer.writeLabel("IF.{}.{}.EXIT".format(self.thisClass, ifInstance))
 
         self.emit(xml="</ifStatement>")
 
@@ -472,7 +472,7 @@ class CompilationEngine:
         trying to decide between some of the alternative parsing rules.
         Specifically, if the current token is an identifier, the routine must
         distinguish between a variable, an array entry, and a subroutine call.
-        A single lookahead token, which may be one of '[', '(', or '.'
+        A single lookahead token, which may be one of '[', '(', or '.',
         suffices to distinguish between the three possibilities. Any other
         token is not part of this term and should not be advanced over.
         """
