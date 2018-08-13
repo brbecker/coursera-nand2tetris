@@ -54,9 +54,15 @@ class CompilationEngine:
         )
         self.eatAndEmit("symbol", ["{"])
 
-        # Expect zero or more classVarDecs
+        # Expect zero or more classVarDecs. Count the fields defined.
+        self.nFields = 0
         while t.tokenType() == "keyword" and t.keyWord() in ["static", "field"]:
-            self.compileClassVarDec()
+            kw = t.keyWord()
+            count = self.compileClassVarDec()
+
+            # Count the fields to determine the size of the object
+            if kw == "field":
+                self.nFields += count
 
         # Expect zero or more subroutineDecs
         while t.tokenType() == "keyword" and t.keyWord() in [
@@ -102,14 +108,18 @@ class CompilationEngine:
             self.eatAndEmit("identifier", category="CLASS", state="USE")
 
         self.eatAndEmit("identifier", category=varKind, state="DEFINE")
+        count = 1
 
         # Expect an optional list of identifiers.
         while t.tokenType() == "symbol" and t.symbol() == ",":
             self.eatAndEmit("symbol", [","])
             self.eatAndEmit("identifier", category=varKind, state="DEFINE")
+            count += 1
 
         self.eatAndEmit("symbol", [";"])
         self.emit(xml="</classVarDec>")
+
+        return count
 
     def compileSubroutine(self):
         """
@@ -123,7 +133,7 @@ class CompilationEngine:
         # Reset the subroutine symbol table
         self.symtab.startSubroutine()
 
-        # If this is a method, seed the symbol table with "this"
+        # If this is a method, seed the symbol table with "this" as argument 0
         if kw == "method":
             self.symtab.define("this", self.thisClass, "ARG")
 
@@ -151,8 +161,25 @@ class CompilationEngine:
         while t.tokenType() == "keyword" and t.keyWord() == "var":
             nLocals += self.compileVarDec()
 
+        # If this subroutine is a constructor, need to add space for one more local variable ("this")
+        if kw == "constructor":
+            nLocals += 1
+
         # Generate the VM code to start the function.
         self.writer.writeFunction("{}.{}".format(self.thisClass, functionName), nLocals)
+
+        # If this subroutine is a constructor, allocate memory for the new object and set the base of the this segment
+        if kw == "constructor":
+            self.writer.writePush("CONST", self.nFields)
+            self.writer.writeCall("Memory.alloc", 1)
+            # Define "this" as a local var
+            self.symtab.define("this", self.thisClass, "VAR")
+            self.writer.writePop("LOCAL", self.symtab.indexOf("this"))
+
+        # If this subroutine is a method, set the base of the this segment
+        if kw == "method":
+            self.writer.writePush("ARG", 0)
+            self.writer.writePop("POINTER", 0)
 
         # Compile the code of the function
         self.compileStatements()
@@ -281,10 +308,13 @@ class CompilationEngine:
             if objType:
                 # ident is an object, so method is objType.method, and the object must be loaded into this as argument 0
                 self.emit(token=token, category=self.symtab.kindOf(ident), state="USE")
+                # subroutine starts with the class type
                 subroutine = objType
+                # Add an argument to the stack for "this"
                 nArgs = 1
-                # TODO
-                raise NotImplementedError("this")
+                kind = self.symtab.kindOf(ident)
+                index = self.symtab.indexOf(ident)
+                self.writer.writePush(kind, index)
             else:
                 # ident is a class, so method is ident.method and there is no this
                 self.emit(token=token, category="CLASS", state="USE")
@@ -470,8 +500,8 @@ class CompilationEngine:
                 self.writer.writePush("CONST", 1)
                 self.writer.writeArithmetic("U-")  # NEG
             else:
-                # TODO: this
-                raise NotImplementedError("TERM constant this")
+                # this, treat like a variable
+                self.writer.writePush(self.symtab.kindOf("this"), self.symtab.indexOf("this"))
         # Identifier (varName, or array name, or subroutine call)
         elif tType == "identifier":
             (_, ident) = self.eatAndEmit("identifier", category="TERM", state="USE")

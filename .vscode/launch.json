@@ -33,6 +33,20 @@
             ]
         },
         {
+            "name": "N2T 11: Square",
+            "type": "python",
+            "request": "launch",
+            "pythonPath": "${config:python.pythonPath}",
+            "cwd": "${workspaceFolder}/nand2tetris/projects/11",
+            "program": "${workspaceFolder}/nand2tetris/projects/11/JackCompiler.py",
+            "args": [
+                "Square",
+            ],
+            "debugOptions": [
+                "RedirectOutput"
+            ]
+        },
+        {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
