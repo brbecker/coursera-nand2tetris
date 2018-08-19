@@ -161,10 +161,6 @@ class CompilationEngine:
         while t.tokenType() == "keyword" and t.keyWord() == "var":
             nLocals += self.compileVarDec()
 
-        # If this subroutine is a constructor, need to add space for one more local variable ("this")
-        if kw == "constructor":
-            nLocals += 1
-
         # Generate the VM code to start the function.
         self.writer.writeFunction("{}.{}".format(self.thisClass, functionName), nLocals)
 
@@ -172,9 +168,7 @@ class CompilationEngine:
         if kw == "constructor":
             self.writer.writePush("CONST", self.nFields)
             self.writer.writeCall("Memory.alloc", 1)
-            # Define "this" as a local var
-            self.symtab.define("this", self.thisClass, "VAR")
-            self.writer.writePop("LOCAL", self.symtab.indexOf("this"))
+            self.writer.writePop("POINTER", 0)
 
         # If this subroutine is a method, set the base of the this segment
         if kw == "method":
@@ -500,8 +494,8 @@ class CompilationEngine:
                 self.writer.writePush("CONST", 1)
                 self.writer.writeArithmetic("U-")  # NEG
             else:
-                # this, treat like a variable
-                self.writer.writePush(self.symtab.kindOf("this"), self.symtab.indexOf("this"))
+                # this
+                self.writer.writePush("POINTER", 0)
         # Identifier (varName, or array name, or subroutine call)
         elif tType == "identifier":
             (_, ident) = self.eatAndEmit("identifier", category="TERM", state="USE")
