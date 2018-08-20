@@ -291,8 +291,6 @@ class CompilationEngine:
         token = self.eat("identifier")
         (_, ident) = token
 
-        nArgs = 0
-
         # Check for a '.', which indicates a method call
         t = self.tokenizer
         if t.tokenType() == "symbol" and t.symbol() == ".":
@@ -302,8 +300,10 @@ class CompilationEngine:
             if objType:
                 # ident is an object, so method is objType.method, and the object must be loaded into this as argument 0
                 self.emit(token=token, category=self.symtab.kindOf(ident), state="USE")
+
                 # subroutine starts with the class type
                 subroutine = objType
+
                 # Add an argument to the stack for "this"
                 nArgs = 1
                 kind = self.symtab.kindOf(ident)
@@ -313,14 +313,20 @@ class CompilationEngine:
                 # ident is a class, so method is ident.method and there is no this
                 self.emit(token=token, category="CLASS", state="USE")
                 subroutine = ident
+                nArgs = 0
 
             methodToken = self.eat("identifier")
             (_, method) = methodToken
             self.emit(token=methodToken, category="METHOD", state="USE")
             subroutine += "." + method
         else:
+            # Bare subroutine calls are assumed to be methods of the current class
             self.emit(token=token, category="SUBROUTINE", state="USE")
-            subroutine = ident
+            subroutine = self.thisClass + "." + ident
+
+            # Add "this" to the stack
+            nArgs = 1
+            self.writer.writePush("POINTER", 0)
 
         self.eatAndEmit("symbol", ["("])
         nArgs += self.compileExpressionList()
