@@ -103,11 +103,11 @@ class CompilationEngine:
         t = self.tokenizer
         tType = t.tokenType()
         if tType == "keyword":
-            self.eatAndEmit("keyword", ["int", "char", "boolean"])
+            (_, varType) = self.eatAndEmit("keyword", ["int", "char", "boolean"])
         else:
-            self.eatAndEmit("identifier", category="CLASS", state="USE")
+            (_, varType) = self.eatAndEmit("identifier", category="CLASS", state="USE")
 
-        self.eatAndEmit("identifier", category=varKind, state="DEFINE")
+        self.eatAndEmit("identifier", category=varKind, varType=varType, state="DEFINE")
         count = 1
 
         # Expect an optional list of identifiers.
