@@ -449,17 +449,19 @@ class CompilationEngine:
         self.compileStatements()
         self.eatAndEmit("symbol", ["}"])
 
-        self.writer.writeGoto("IF.{}.{}.EXIT".format(self.thisClass, ifInstance))
-        self.writer.writeLabel("IF.{}.{}.ELSE".format(self.thisClass, ifInstance))
-
         t = self.tokenizer
         if t.tokenType() == "keyword" and t.keyWord() == "else":
+            self.writer.writeGoto("IF.{}.{}.EXIT".format(self.thisClass, ifInstance))
+            self.writer.writeLabel("IF.{}.{}.ELSE".format(self.thisClass, ifInstance))
+
             self.eatAndEmit("keyword", ["else"])
             self.eatAndEmit("symbol", ["{"])
             self.compileStatements()
             self.eatAndEmit("symbol", ["}"])
+            self.writer.writeLabel("IF.{}.{}.EXIT".format(self.thisClass, ifInstance))
+        else:
+            self.writer.writeLabel("IF.{}.{}.ELSE".format(self.thisClass, ifInstance))
 
-        self.writer.writeLabel("IF.{}.{}.EXIT".format(self.thisClass, ifInstance))
 
         self.emit(xml="</ifStatement>")
 
