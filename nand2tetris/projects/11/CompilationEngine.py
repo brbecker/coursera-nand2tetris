@@ -353,18 +353,32 @@ class CompilationEngine:
 
         # Check for array qualifier
         t = self.tokenizer
+        arrayRef = False
         if t.tokenType() == "symbol" and t.symbol() == "[":
-            # TODO
+            # Compute the offset
             self.eatAndEmit("symbol", "[")
             self.compileExpression()
             self.eatAndEmit("symbol", ["]"])
+
+            # Add the offset to the base. Leave the result on the stack.
+            self.writer.writePush(varKind, varIndex)
+            self.writer.writeArithmetic("+")
+            arrayRef = True
 
         self.eatAndEmit("symbol", ["="])
         self.compileExpression()
         self.eatAndEmit("symbol", [";"])
 
         # Value to save is at the top of the stack.
-        self.writer.writePop(varKind, varIndex)
+        if not arrayRef:
+            # Direct POP
+            self.writer.writePop(varKind, varIndex)
+        else:
+            # Array reference. Save value temporarily while setting THAT.
+            self.writer.writePop("TEMP", 0)
+            self.writer.writePop("POINTER", 1)
+            self.writer.writePush("TEMP", 0)
+            self.writer.writePop("THAT", 0)
 
         self.emit(xml="</letStatement>")
 
@@ -488,7 +502,14 @@ class CompilationEngine:
             self.writer.writePush("CONST", value)
         # String constant
         elif tType == "stringConstant":
-            self.eatAndEmit("stringConstant")
+            (_, value) = self.eatAndEmit("stringConstant")
+            # Declare space for the string
+            self.writer.writePush("CONST", len(value))
+            self.writer.writeCall("String.new", 1)
+            # Save the contents of the string
+            for c in value:
+                self.writer.writePush("CONST", ord(c))
+                self.writer.writeCall("String.appendChar", 2)
         # Keyword constant
         elif tType == "keyword" and t.keyWord() in ["true", "false", "null", "this"]:
             (_, kw) = self.eatAndEmit("keyword", ["true", "false", "null", "this"])
@@ -510,9 +531,16 @@ class CompilationEngine:
                 if symbol == "[":
                     # Array reference
                     # ident is the array name
+                    # Compute the offset
                     self.eatAndEmit("symbol", ["["])
                     self.compileExpression()
                     self.eatAndEmit("symbol", ["]"])
+                    # Add base to offset
+                    self.writer.writePush(self.symtab.kindOf(ident), self.symtab.indexOf(ident))
+                    self.writer.writeArithmetic("+")
+                    # Update THAT and retrieve
+                    self.writer.writePop("POINTER", 1)
+                    self.writer.writePush("THAT", 0)
                 elif symbol == "(":
                     # Subroutine call
                     # ident is the subroutine.
