@@ -61,6 +61,34 @@
             ]
         },
         {
+            "name": "N2T 11: Pong",
+            "type": "python",
+            "request": "launch",
+            "pythonPath": "${config:python.pythonPath}",
+            "cwd": "${workspaceFolder}/nand2tetris/projects/11",
+            "program": "${workspaceFolder}/nand2tetris/projects/11/JackCompiler.py",
+            "args": [
+                "Pong",
+            ],
+            "debugOptions": [
+                "RedirectOutput"
+            ]
+        },
+        {
+            "name": "N2T 11: ComplexArrays",
+            "type": "python",
+            "request": "launch",
+            "pythonPath": "${config:python.pythonPath}",
+            "cwd": "${workspaceFolder}/nand2tetris/projects/11",
+            "program": "${workspaceFolder}/nand2tetris/projects/11/JackCompiler.py",
+            "args": [
+                "ComplexArrays",
+            ],
+            "debugOptions": [
+                "RedirectOutput"
+            ]
+        },
+        {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
