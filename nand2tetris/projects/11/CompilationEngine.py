@@ -556,24 +556,23 @@ class CompilationEngine:
 
                     # Look up the object's type in the symbol table. If not found, then it is a class name and there is no object to be "this".
                     objType = self.symtab.typeOf(ident)
+                    nArgs = 0
                     if objType is not None:
                         # Push this onto stack as argument 0
-                        # TODO: How?
-                        addSelf = 1
-                        raise NotImplementedError("Need to push this onto stack")
+                        self.writer.writePush(self.symtab.kindOf(ident), self.symtab.indexOf(ident))
+                        nArgs = 1
                     else:
                         # ident is the class name, so use it
                         objType = ident
-                        addSelf = 0
 
                     self.eatAndEmit("symbol", ["."])
                     (_, method) = self.eatAndEmit(
                         "identifier", category="SUBROUTINE", state="USE"
                     )
                     self.eatAndEmit("symbol", ["("])
-                    nArgs = self.compileExpressionList()
+                    nArgs += self.compileExpressionList()
                     self.eatAndEmit("symbol", [")"])
-                    self.writer.writeCall(objType + "." + method, nArgs + addSelf)
+                    self.writer.writeCall(objType + "." + method, nArgs)
                 else:
                     # Next token not a symbol, so ident is a simple variable identifier.
                     varKind = self.symtab.kindOf(ident)
